@@ -60,36 +60,24 @@ export default function VisualizarFicha() {
   
     // Add PDF export class
     input.classList.add('pdf-export');
-    
-    // Force layout recalculation
-    input.offsetHeight;
   
     // Wait for styles to apply
     setTimeout(() => {
       html2canvas(input, {
-        scale: 2, // Higher scale for better quality
+        scale: 1.5, // Balanced scale for quality and performance
         useCORS: true,
-        logging: false,
-        allowTaint: true,
-        backgroundColor: '#ffffff',
+        logging: false, // Disable logging for cleaner console
+        allowTaint: true, // Allow tainting the canvas from cross-origin images (if any)
+        backgroundColor: '#ffffff', // White background
         width: input.scrollWidth,
         height: input.scrollHeight,
         scrollX: 0,
         scrollY: 0,
-        windowWidth: window.innerWidth,
-        windowHeight: window.innerHeight,
-        x: 0,
-        y: 0,
-        foreignObjectRendering: true
+        windowWidth: input.scrollWidth,
+        windowHeight: input.scrollHeight
       }).then(canvas => {
         const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF({
-          orientation: 'portrait',
-          unit: 'mm',
-          format: 'a4',
-          compress: true
-        });
-        
+        const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
         const imgProps = pdf.getImageProperties(imgData);
@@ -97,33 +85,27 @@ export default function VisualizarFicha() {
         
         let heightLeft = imgHeight;
         let position = 0;
-        const margin = 10; // 10mm margin
-        const contentWidth = pdfWidth - (margin * 2);
-        const contentHeight = (imgProps.height * contentWidth) / imgProps.width;
   
-        // Add first page
-        pdf.addImage(imgData, 'PNG', margin, margin, contentWidth, contentHeight);
-        heightLeft = contentHeight - (pdfHeight - margin * 2);
+        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
+        heightLeft -= pdfHeight;
   
-        // Add additional pages if needed
         while (heightLeft > 0) {
-          position = heightLeft - (pdfHeight - margin * 2);
+          position = heightLeft - pdfHeight;
           pdf.addPage();
-          pdf.addImage(imgData, 'PNG', margin, -position + margin, contentWidth, contentHeight);
-          heightLeft -= (pdfHeight - margin * 2);
+          pdf.addImage(imgData, 'PNG', 0, -position, pdfWidth, imgHeight);
+          heightLeft -= pdfHeight;
         }
         
         pdf.save(`ficha_${paciente.nome_crianca.replace(/\s+/g, '_')}.pdf`);
         
       }).catch(err => {
         console.error("Error exporting PDF:", err);
-        alert('Erro ao gerar PDF. Tente novamente.');
       }).finally(() => {
         // Remove PDF export class
         input.classList.remove('pdf-export');
         setIsExporting(false);
       });
-    }, 200);
+    }, 100);
   };
 
   if (isLoading) {
