@@ -1,7 +1,7 @@
-/* PDF Export Styles - Layout idêntico ao exemplo */
+/* PDF Export Styles - Baseado no PDF de referência */
 .pdf-export {
-  background: #ffffff !important;
-  color: #000000 !important;
+  background: linear-gradient(135deg, #1e5128 0%, #2d5a3d 100%) !important;
+  color: #ffffff !important;
   padding: 0 !important;
   margin: 0 !important;
   font-family: 'Arial', sans-serif !important;
@@ -14,12 +14,12 @@
   page-break-inside: avoid !important;
 }
 
-/* Header com fundo verde */
+/* Header com logo e foto */
 .pdf-export-header {
   background: linear-gradient(135deg, #1e5128 0%, #2d5a3d 100%) !important;
-  padding: 30px !important;
+  padding: 40px !important;
   position: relative !important;
-  height: 200px !important;
+  height: 300px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
@@ -28,128 +28,131 @@
 
 .pdf-export-logo-section {
   flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
 }
 
 .pdf-export-logo {
   color: #ffd700 !important;
-  font-size: 48px !important;
+  font-size: 72px !important;
   font-weight: bold !important;
   font-family: 'Brush Script MT', cursive !important;
   text-shadow: 2px 2px 4px rgba(0,0,0,0.3) !important;
   margin-bottom: 10px !important;
+  font-style: italic !important;
 }
 
 .pdf-export-title {
-  color: #ffffff !important;
-  font-size: 28px !important;
+  color: #ffd700 !important;
+  font-size: 48px !important;
   font-weight: bold !important;
   margin: 0 !important;
   text-transform: uppercase !important;
-  letter-spacing: 2px !important;
+  letter-spacing: 3px !important;
 }
 
 .pdf-export-subtitle {
   color: #ffffff !important;
-  font-size: 20px !important;
-  font-weight: normal !important;
-  margin: 0 !important;
-}
-
-.pdf-export-doctor-placeholder {
-  width: 120px !important;
-  height: 120px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-.pdf-export-doctor-circle {
-  width: 120px !important;
-  height: 120px !important;
-  border-radius: 50% !important;
-  border: 3px solid #ffffff !important;
-  background: rgba(255, 255, 255, 0.2) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  color: #ffffff !important;
-  font-size: 12px !important;
+  font-size: 48px !important;
   font-weight: bold !important;
+  margin: 0 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 3px !important;
 }
 
-/* Formulário com fundo branco */
+.pdf-export-doctor-section {
+  width: 200px !important;
+  height: 200px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.pdf-export-doctor-image {
+  width: 200px !important;
+  height: 200px !important;
+  border-radius: 0 !important;
+  object-fit: cover !important;
+}
+
+/* Formulário com duas colunas */
 .pdf-export-form {
-  background: #ffffff !important;
-  padding: 30px !important;
+  background: linear-gradient(135deg, #1e5128 0%, #2d5a3d 100%) !important;
+  padding: 40px !important;
   margin: 0 !important;
-  color: #000000 !important;
+  color: #ffffff !important;
+  display: flex !important;
+  gap: 30px !important;
+}
+
+.pdf-export-column {
+  flex: 1 !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 20px !important;
+  padding: 30px !important;
+  backdrop-filter: blur(10px) !important;
 }
 
 /* Campos do formulário */
 .pdf-export-field {
-  margin-bottom: 12px !important;
+  margin-bottom: 20px !important;
   display: flex !important;
-  align-items: baseline !important;
+  flex-direction: column !important;
   width: 100% !important;
 }
 
 .pdf-export-field label {
-  color: #1e5128 !important;
+  color: #ffffff !important;
   font-weight: bold !important;
-  font-size: 11px !important;
+  font-size: 12px !important;
   text-transform: uppercase !important;
-  min-width: 180px !important;
-  margin-right: 10px !important;
-  margin-bottom: 0 !important;
-  flex-shrink: 0 !important;
+  margin-bottom: 5px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.pdf-export-field-icon {
+  width: 16px !important;
+  height: 16px !important;
+  background: #ffffff !important;
+  border-radius: 50% !important;
+  display: inline-block !important;
 }
 
 .pdf-export-field-value {
-  flex: 1 !important;
-  border-bottom: 1px dotted #999999 !important;
-  min-height: 18px !important;
-  padding: 2px 5px !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: none !important;
+  border-radius: 25px !important;
+  padding: 12px 20px !important;
   color: #000000 !important;
-  font-size: 11px !important;
+  font-size: 14px !important;
   line-height: 1.2 !important;
-}
-
-/* Layout de duas colunas */
-.pdf-export-row {
-  display: flex !important;
-  gap: 30px !important;
-  margin-bottom: 12px !important;
-  width: 100% !important;
-}
-
-.pdf-export-col {
-  flex: 1 !important;
+  min-height: 20px !important;
 }
 
 /* Campos SIM/NÃO */
 .pdf-export-checkbox-field {
-  margin-bottom: 12px !important;
+  margin-bottom: 20px !important;
   display: flex !important;
-  align-items: baseline !important;
+  flex-direction: column !important;
   width: 100% !important;
 }
 
 .pdf-export-checkbox-field label {
-  color: #1e5128 !important;
+  color: #ffffff !important;
   font-weight: bold !important;
-  font-size: 11px !important;
+  font-size: 12px !important;
   text-transform: uppercase !important;
-  min-width: 180px !important;
-  margin-right: 10px !important;
-  margin-bottom: 0 !important;
-  flex-shrink: 0 !important;
+  margin-bottom: 10px !important;
 }
 
 .pdf-export-checkbox-container {
   display: flex !important;
   align-items: center !important;
   gap: 15px !important;
-  flex: 1 !important;
+  margin-bottom: 10px !important;
 }
 
 .pdf-export-checkbox {
@@ -159,32 +162,69 @@
 }
 
 .pdf-export-checkbox-box {
-  width: 12px !important;
-  height: 12px !important;
-  border: 1px solid #000000 !important;
-  display: inline-block !important;
-  text-align: center !important;
-  line-height: 10px !important;
-  font-size: 8px !important;
+  width: 40px !important;
+  height: 25px !important;
+  border: 2px solid #ffffff !important;
+  border-radius: 15px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  font-size: 10px !important;
   font-weight: bold !important;
+  color: #ffffff !important;
+}
+
+.pdf-export-checkbox-box.checked {
+  background: rgba(255, 255, 255, 0.9) !important;
+  color: #000000 !important;
 }
 
 .pdf-export-checkbox-label {
-  font-size: 10px !important;
-  color: #000000 !important;
-  font-weight: normal !important;
+  font-size: 12px !important;
+  color: #ffffff !important;
+  font-weight: bold !important;
+  text-transform: uppercase !important;
 }
 
-/* Seções */
-.pdf-export h2 {
-  color: #1e5128 !important;
-  margin: 25px 0 15px 0 !important;
-  font-weight: bold !important;
-  page-break-after: avoid !important;
-  text-transform: uppercase !important;
-  border-bottom: 2px solid #1e5128 !important;
-  padding-bottom: 5px !important;
+/* Campo QUAL */
+.pdf-export-qual-field {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: none !important;
+  border-radius: 25px !important;
+  padding: 12px 20px !important;
+  color: #000000 !important;
   font-size: 14px !important;
+  line-height: 1.2 !important;
+  min-height: 20px !important;
+  margin-top: 10px !important;
+}
+
+/* Campos de texto longo */
+.pdf-export-text-field {
+  margin-bottom: 20px !important;
+  width: 100% !important;
+}
+
+.pdf-export-text-field label {
+  color: #ffffff !important;
+  font-weight: bold !important;
+  font-size: 12px !important;
+  text-transform: uppercase !important;
+  display: block !important;
+  margin-bottom: 8px !important;
+}
+
+.pdf-export-text-field-value {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: none !important;
+  border-radius: 25px !important;
+  padding: 12px 20px !important;
+  color: #000000 !important;
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+  min-height: 40px !important;
+  width: 100% !important;
 }
 
 /* Ocultar elementos desnecessários no PDF */
@@ -197,10 +237,10 @@
 
 /* Texto padrão */
 .pdf-export p {
-  color: #000000 !important;
+  color: #ffffff !important;
   margin-bottom: 5px !important;
   line-height: 1.4 !important;
-  font-size: 11px !important;
+  font-size: 12px !important;
 }
 
 /* Grid responsivo para PDF */
@@ -224,7 +264,7 @@
 .pdf-export .text-emerald-100,
 .pdf-export .text-emerald-200,
 .pdf-export .text-emerald-300 {
-  color: #000000 !important;
+  color: #ffffff !important;
 }
 
 /* Quebras de página */
@@ -233,60 +273,26 @@
   break-before: page !important;
 }
 
-/* Rodapé */
-.pdf-export-footer {
-  position: absolute !important;
-  bottom: 20px !important;
-  left: 30px !important;
-  right: 30px !important;
-  text-align: center !important;
-  font-size: 10px !important;
-  color: #666666 !important;
-  border-top: 1px solid #cccccc !important;
-  padding-top: 10px !important;
+/* Campos especiais com ícones */
+.pdf-export-field.with-icon label::before {
+  content: '' !important;
+  width: 16px !important;
+  height: 16px !important;
+  background: #ffffff !important;
+  border-radius: 50% !important;
+  display: inline-block !important;
+  margin-right: 8px !important;
 }
 
-/* Assinatura */
-.pdf-export-signature {
-  margin-top: 40px !important;
-  text-align: center !important;
+/* Campos de duas colunas dentro da coluna */
+.pdf-export-row {
+  display: flex !important;
+  gap: 15px !important;
+  margin-bottom: 20px !important;
 }
 
-.pdf-export-signature-line {
-  border-bottom: 1px solid #000000 !important;
-  width: 300px !important;
-  margin: 20px auto 10px auto !important;
-}
-
-.pdf-export-signature-text {
-  font-size: 10px !important;
-  color: #000000 !important;
-  font-weight: bold !important;
-  text-transform: uppercase !important;
-}
-
-/* Campo de texto longo */
-.pdf-export-text-field {
-  margin-bottom: 12px !important;
-  width: 100% !important;
-}
-
-.pdf-export-text-field label {
-  color: #1e5128 !important;
-  font-weight: bold !important;
-  font-size: 11px !important;
-  text-transform: uppercase !important;
-  display: block !important;
-  margin-bottom: 5px !important;
-}
-
-.pdf-export-text-field-value {
-  width: 100% !important;
-  border-bottom: 1px dotted #999999 !important;
-  min-height: 18px !important;
-  padding: 2px 5px !important;
-  color: #000000 !important;
-  font-size: 11px !important;
-  line-height: 1.2 !important;
+.pdf-export-row .pdf-export-field {
+  flex: 1 !important;
+  margin-bottom: 0 !important;
 }
 
