@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { Paciente } from "@/entities/Paciente";
@@ -13,15 +13,21 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import MapaDental from "../components/MapaDental";
 
-// Carrega logo do public/logo.png
+// Loads logo from public/logo.png
 async function getLogoBase64() {
-  const response = await fetch("/logo.png");
-  const blob = await response.blob();
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result);
-    reader.readAsDataURL(blob);
-  });
+  try {
+    const response = await fetch("/logo.png");
+    const blob = await response.blob();
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  } catch (error) {
+    console.error("Error loading logo:", error);
+    return null; // Return null if the logo can't be loaded
+  }
 }
 
 export default function VisualizarFicha() {
@@ -30,6 +36,7 @@ export default function VisualizarFicha() {
   const [consultas, setConsultas] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
+  const contentRef = useRef(null);
 
   const urlParams = new URLSearchParams(window.location.search);
   const pacienteId = urlParams.get("id");
@@ -38,6 +45,8 @@ export default function VisualizarFicha() {
     if (pacienteId) {
       loadPaciente();
       loadConsultas();
+    } else {
+        setIsLoading(false); // If no ID, stop loading
     }
     // eslint-disable-next-line
   }, [pacienteId]);
@@ -55,9 +64,9 @@ export default function VisualizarFicha() {
   const loadConsultas = async () => {
     try {
       const todasConsultas = await Consulta.list();
-      const consultasPaciente = todasConsultas.filter(
-        (c) => c.paciente_id === pacienteId
-      );
+      const consultasPaciente = todasConsultas
+        .filter((c) => c.paciente_id === pacienteId)
+        .sort((a,b) => new Date(b.data_atendimento) - new Date(a.data_atendimento));
       setConsultas(consultasPaciente);
     } catch (error) {
       console.error("Erro ao carregar consultas:", error);
@@ -66,135 +75,114 @@ export default function VisualizarFicha() {
     }
   };
 
-  function addHeaderAndFooter(pdf, pageNum, totalPages, paciente, logoBase64) {
+  const addHeaderAndFooter = (pdf, totalPages, paciente, logoBase64) => {
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
     const margin = 10;
     const logoW = 30, logoH = 13;
 
-    // Header
-    if (logoBase64 && logoBase64.length > 30) {
-      pdf.addImage(logoBase64, "PNG", margin, 7, logoW, logoH);
-    }
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(14);
-    pdf.text("Ficha de Anamnese Odontopediátrica", pdfWidth / 2, 16, { align: "center" });
-    pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(9);
-    pdf.text(
-      "Exportado em: " + format(new Date(), "dd/MM/yyyy HH:mm"),
-      pdfWidth - margin,
-      14,
-      { align: "right" }
-    );
-    if (paciente && paciente.nome_crianca) {
-      pdf.setFontSize(10);
-      pdf.setTextColor(50, 50, 50);
-      pdf.text("Paciente: " + paciente.nome_crianca, margin, 24);
-      pdf.setTextColor(0, 0, 0);
-    }
-    pdf.setLineWidth(0.3);
-    pdf.line(margin, 26, pdfWidth - margin, 26);
+    for (let i = 1; i <= totalPages; i++) {
+        pdf.setPage(i);
 
-    // Footer
-    pdf.setLineWidth(0.1);
-    pdf.line(margin, pdfHeight - 15, pdfWidth - margin, pdfHeight - 15);
-    pdf.setFontSize(9);
-    pdf.setTextColor(120, 120, 120);
-    pdf.text(
-      `Página ${pageNum} de ${totalPages}`,
-      pdfWidth / 2,
-      pdfHeight - 9,
-      { align: "center" }
-    );
-    pdf.text(
-      "Gerado pelo Sistema de Fichas",
-      margin,
-      pdfHeight - 9
-    );
-    pdf.setTextColor(0, 0, 0);
-  }
+        // Header
+        if (logoBase64) {
+            pdf.addImage(logoBase64, "PNG", margin, 7, logoW, logoH);
+        }
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(14);
+        pdf.text("Ficha de Anamnese Odontopediátrica", pdfWidth / 2, 16, { align: "center" });
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(9);
+        pdf.text(
+            "Exportado em: " + format(new Date(), "dd/MM/yyyy HH:mm"),
+            pdfWidth - margin,
+            14,
+            { align: "right" }
+        );
+        if (paciente && paciente.nome_crianca) {
+            pdf.setFontSize(10);
+            pdf.setTextColor(50, 50, 50);
+            pdf.text("Paciente: " + paciente.nome_crianca, margin, 24);
+            pdf.setTextColor(0, 0, 0);
+        }
+        pdf.setLineWidth(0.3);
+        pdf.line(margin, 26, pdfWidth - margin, 26);
+
+        // Footer
+        pdf.setLineWidth(0.1);
+        pdf.line(margin, pdfHeight - 15, pdfWidth - margin, pdfHeight - 15);
+        pdf.setFontSize(9);
+        pdf.setTextColor(120, 120, 120);
+        pdf.text(
+            `Página ${i} de ${totalPages}`,
+            pdfWidth / 2,
+            pdfHeight - 9,
+            { align: "center" }
+        );
+        pdf.text(
+            "Gerado pelo Sistema de Fichas",
+            margin,
+            pdfHeight - 9
+        );
+        pdf.setTextColor(0, 0, 0);
+    }
+  };
 
   async function handleExportPDF() {
     setIsExporting(true);
-    const input = document.getElementById("ficha-content");
-    if (!input) {
+    const container = contentRef.current;
+    if (!container) {
       setIsExporting(false);
       return;
     }
-    input.classList.add("pdf-export");
+
+    container.classList.add("pdf-export");
+
     try {
-      const logoBase64 = await getLogoBase64();
-      const scale = 2;
-      const canvas = await html2canvas(input, {
-        scale,
-        useCORS: true,
-        backgroundColor: "#fff",
-        width: input.scrollWidth,
-        height: input.scrollHeight,
-        windowWidth: input.scrollWidth,
-        windowHeight: input.scrollHeight,
-      });
-      const pdf = new jsPDF("p", "mm", "a4");
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const marginLeft = 10;
-      const marginRight = 10;
-      const headerFooterHeight = 36;
-      const usablePdfHeight = pdfHeight - headerFooterHeight * 2;
+        const logoBase64 = await getLogoBase64();
+        const pdf = new jsPDF("p", "mm", "a4");
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const margin = 10;
+        const contentWidth = pdfWidth - (margin * 2);
+        const headerHeight = 30;
+        const footerHeight = 20;
+        const usablePdfHeight = pdf.internal.pageSize.getHeight() - headerHeight - footerHeight;
+        let currentY = headerHeight;
 
-      // px para mm
-      const imgWidthPx = canvas.width;
-      const imgHeightPx = canvas.height;
-      const imgWidthMm = pdfWidth - marginLeft - marginRight;
-      const pxPerMm = imgWidthPx / imgWidthMm;
-      const usablePxHeight = usablePdfHeight * pxPerMm;
+        const contentBlocks = Array.from(container.children);
 
-      let positionPx = 0;
-      let pageNum = 1;
-      const totalPages = Math.ceil(imgHeightPx / usablePxHeight);
+        for (const block of contentBlocks) {
+            const canvas = await html2canvas(block, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#ffffff',
+            });
 
-      while (positionPx < imgHeightPx) {
-        const pageCanvas = document.createElement("canvas");
-        pageCanvas.width = imgWidthPx;
-        pageCanvas.height = Math.min(usablePxHeight, imgHeightPx - positionPx);
-        const pageCtx = pageCanvas.getContext("2d");
-        pageCtx.drawImage(
-          canvas,
-          0,
-          positionPx,
-          imgWidthPx,
-          pageCanvas.height,
-          0,
-          0,
-          imgWidthPx,
-          pageCanvas.height
-        );
-        const imgData = pageCanvas.toDataURL("image/png");
-        if (pageNum > 1) pdf.addPage();
+            const imgData = canvas.toDataURL('image/png');
+            const imgWidth = canvas.width;
+            const imgHeight = canvas.height;
+            const ratio = contentWidth / imgWidth;
+            const imgHeightMm = imgHeight * ratio;
 
-        pdf.addImage(
-          imgData,
-          "PNG",
-          marginLeft,
-          headerFooterHeight,
-          imgWidthMm,
-          (pageCanvas.height / pxPerMm)
-        );
-        addHeaderAndFooter(pdf, pageNum, totalPages, paciente, logoBase64);
+            if (currentY + imgHeightMm > usablePdfHeight + headerHeight && currentY > headerHeight) {
+                pdf.addPage();
+                currentY = headerHeight;
+            }
 
-        positionPx += usablePxHeight;
-        pageNum++;
-      }
+            pdf.addImage(imgData, 'PNG', margin, currentY, contentWidth, imgHeightMm);
+            currentY += imgHeightMm + 4;
+        }
 
-      pdf.save(
-        `ficha_${paciente.nome_crianca.replace(/\s+/g, "_")}.pdf`
-      );
+        const totalPages = pdf.internal.getNumberOfPages();
+        addHeaderAndFooter(pdf, totalPages, paciente, logoBase64);
+
+        pdf.save(`ficha_${paciente.nome_crianca.replace(/\s+/g, "_")}.pdf`);
+
     } catch (err) {
-      console.error("Erro ao exportar PDF:", err);
+        console.error("Erro ao exportar PDF:", err);
     } finally {
-      input.classList.remove("pdf-export");
-      setIsExporting(false);
+        container.classList.remove("pdf-export");
+        setIsExporting(false);
     }
   }
 
@@ -202,7 +190,7 @@ export default function VisualizarFicha() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+          <Loader2 className="animate-spin h-12 w-12 text-white mx-auto mb-4" />
           <p className="text-white">Carregando ficha...</p>
         </div>
       </div>
@@ -215,7 +203,7 @@ export default function VisualizarFicha() {
         <div className="glass-card rounded-2xl p-12 text-center max-w-2xl mx-auto">
           <FileText className="w-16 h-16 text-white/40 mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-white mb-2">Paciente não encontrado</h3>
-          <p className="text-white/70 mb-6">Não foi possível encontrar os dados deste paciente.</p>
+          <p className="text-white/70 mb-6">Não foi possível encontrar os dados deste paciente. Verifique se o ID na URL está correto.</p>
           <button
             onClick={() => navigate(createPageUrl("Dashboard"))}
             className="glass-button px-6 py-3 rounded-lg text-white font-semibold hover:bg-emerald-500/30 transition-all"
@@ -266,8 +254,8 @@ export default function VisualizarFicha() {
           </button>
         </div>
 
-        {/* TODOS OS BLOCOS COMPLETOS ABAIXO */}
-        <div className="space-y-2" id="ficha-content">
+        {/* Content to be exported */}
+        <div className="space-y-2" ref={contentRef}>
           {/* -------- DADOS PESSOAIS -------- */}
           <div className="glass-card rounded-2xl p-6 space-y-6">
             <div className="flex items-center space-x-3 mb-6">
@@ -361,7 +349,7 @@ export default function VisualizarFicha() {
               <FileText className="w-6 h-6 text-emerald-300" />
               <h2 className="text-xl font-semibold text-white">Motivo da Consulta</h2>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-4">
               <div>
                 <label className="text-emerald-200 text-sm font-medium">Motivo da consulta</label>
                 <p className="text-white">{formatarTexto(paciente.motivo_consulta)}</p>
@@ -408,9 +396,7 @@ export default function VisualizarFicha() {
                   <p className="text-emerald-200 text-sm mt-1">{paciente.qual_comunicacao}</p>
                 )}
               </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
+               <div>
                 <label className="text-emerald-200 text-sm font-medium">Como reage quando contrariado</label>
                 <p className="text-white">{formatarTexto(paciente.reacao_contrariado)}</p>
               </div>
@@ -458,7 +444,7 @@ export default function VisualizarFicha() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <label className="text-emerald-200 text-sm font-medium">Alergias medicamentos</label>
+                <label className="text-emerald-200 text-sm font-medium">Alergias a medicamentos</label>
                 <p className="text-white">{formatarTexto(paciente.alergias_medicamento)}</p>
               </div>
               <div>
@@ -574,7 +560,7 @@ export default function VisualizarFicha() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="text-emerald-200 text-sm font-medium">Anos na primeira consulta</label>
+                <label className="text-emerald-200 text-sm font-medium">Idade na primeira consulta</label>
                 <p className="text-white">{paciente.anos_primeira_consulta || "Não informado"}</p>
               </div>
               <div>
@@ -597,7 +583,7 @@ export default function VisualizarFicha() {
               <Apple className="w-6 h-6 text-emerald-300" />
               <h2 className="text-xl font-semibold text-white">Alimentação e Outras Informações</h2>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-4">
               <div>
                 <label className="text-emerald-200 text-sm font-medium">Alimentação</label>
                 <p className="text-white">{formatarTexto(paciente.alimentacao_notas)}</p>
@@ -657,12 +643,11 @@ export default function VisualizarFicha() {
 
           {/* -------- MAPA DENTAL -------- */}
           {paciente.mapa_dental && paciente.mapa_dental.length > 0 && (
-            <div>
-              <MapaDental
-                selectedTeeth={paciente.mapa_dental}
-                onTeethChange={() => {}} // Read-only
-              />
-            </div>
+            <MapaDental
+              selectedTeeth={paciente.mapa_dental}
+              onTeethChange={() => {}} // Read-only
+              readOnly={true}
+            />
           )}
 
           {/* -------- HISTÓRICO DE CONSULTAS -------- */}
@@ -687,9 +672,9 @@ export default function VisualizarFicha() {
                         <p className="text-white">{consulta.peso} kg</p>
                       </div>
                       {consulta.observacoes && (
-                        <div>
+                        <div className="md:col-span-3">
                           <label className="text-emerald-200 text-sm font-medium">Observações</label>
-                          <p className="text-white">{consulta.observacoes}</p>
+                          <p className="text-white whitespace-pre-wrap">{consulta.observacoes}</p>
                         </div>
                       )}
                     </div>
@@ -707,7 +692,7 @@ export default function VisualizarFicha() {
               <p className="text-white">{formatarTexto(paciente.responsavel_nome)}</p>
             </div>
             <div className="flex items-center space-x-2">
-              <div className={`w-4 h-4 rounded border-2 ${
+              <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${
                 paciente.informacoes_verdadeiras
                   ? 'bg-emerald-500 border-emerald-500'
                   : 'border-white/30'
@@ -729,14 +714,3 @@ export default function VisualizarFicha() {
     </div>
   );
 }
-
-// CSS PARA O PDF (adicione ao seu global.css)
-/*
-.pdf-export,
-.pdf-export * {
-  background: #fff !important;
-  color: #000 !important;
-  box-shadow: none !important;
-  filter: none !important;
-}
-*/
