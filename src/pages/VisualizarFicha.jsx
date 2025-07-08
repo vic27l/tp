@@ -70,7 +70,7 @@ export default function VisualizarFicha() {
         useCORS: true,
         logging: false,
         allowTaint: true,
-        backgroundColor: '#ffffff',
+        backgroundColor: '#1e5128',
         width: input.scrollWidth,
         height: input.scrollHeight,
         scrollX: 0,
@@ -145,33 +145,31 @@ export default function VisualizarFicha() {
           <div className="pdf-export-title">FICHA DE</div>
           <div className="pdf-export-subtitle">ANAMNESE</div>
         </div>
-        <div className="pdf-export-doctor-placeholder">
-          <div className="pdf-export-doctor-circle">
-            <span>FOTO</span>
-          </div>
+        <div className="pdf-export-doctor-section">
+          <img 
+            src="/logo.png" 
+            alt="Dr. Paulo" 
+            className="pdf-export-doctor-image"
+            onError={(e) => {
+              e.target.style.display = 'none';
+              e.target.parentNode.innerHTML = '<div style="width: 200px; height: 200px; background: rgba(255,255,255,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">FOTO</div>';
+            }}
+          />
         </div>
       </div>
 
-      {/* Formulário */}
+      {/* Formulário com duas colunas */}
       <div className="pdf-export-form">
-        {/* Dados Pessoais */}
-        <div className="pdf-export-row">
-          <div className="pdf-export-col">
-            <div className="pdf-export-field">
-              <label>NOME DA CRIANÇA:</label>
-              <div className="pdf-export-field-value">{paciente.nome_crianca}</div>
-            </div>
+        {/* Coluna Esquerda */}
+        <div className="pdf-export-column">
+          {/* Nome da Criança */}
+          <div className="pdf-export-field with-icon">
+            <label>NOME DA CRIANÇA:</label>
+            <div className="pdf-export-field-value">{paciente.nome_crianca}</div>
           </div>
-          <div className="pdf-export-col">
-            <div className="pdf-export-field">
-              <label>IDADE:</label>
-              <div className="pdf-export-field-value">{paciente.idade || ""}</div>
-            </div>
-          </div>
-        </div>
 
-        <div className="pdf-export-row">
-          <div className="pdf-export-col">
+          {/* Data de Nascimento e Idade */}
+          <div className="pdf-export-row">
             <div className="pdf-export-field">
               <label>DATA DE NASCIMENTO:</label>
               <div className="pdf-export-field-value">
@@ -181,657 +179,315 @@ export default function VisualizarFicha() {
                 }
               </div>
             </div>
-          </div>
-          <div className="pdf-export-col">
             <div className="pdf-export-field">
-              <label>CIDADE:</label>
-              <div className="pdf-export-field-value">{paciente.cidade || ""}</div>
+              <label>IDADE:</label>
+              <div className="pdf-export-field-value">{paciente.idade || ""}</div>
             </div>
           </div>
-        </div>
 
-        <div className="pdf-export-row">
-          <div className="pdf-export-col">
-            <div className="pdf-export-field">
-              <label>ENDEREÇO:</label>
-              <div className="pdf-export-field-value">{paciente.endereco || ""}</div>
-            </div>
+          {/* Endereço */}
+          <div className="pdf-export-field">
+            <label>ENDEREÇO:</label>
+            <div className="pdf-export-field-value">{paciente.endereco || ""}</div>
           </div>
-          <div className="pdf-export-col">
+
+          {/* Bairro e CEP */}
+          <div className="pdf-export-row">
+            <div className="pdf-export-field">
+              <label>BAIRRO:</label>
+              <div className="pdf-export-field-value">{paciente.bairro || ""}</div>
+            </div>
             <div className="pdf-export-field">
               <label>CEP:</label>
               <div className="pdf-export-field-value">{paciente.cep || ""}</div>
             </div>
           </div>
-        </div>
 
-        <div className="pdf-export-row">
-          <div className="pdf-export-col">
+          {/* Cidade e Cel */}
+          <div className="pdf-export-row">
             <div className="pdf-export-field">
-              <label>BAIRRO:</label>
-              <div className="pdf-export-field-value">{paciente.bairro || ""}</div>
+              <label>CIDADE:</label>
+              <div className="pdf-export-field-value">{paciente.cidade || ""}</div>
             </div>
-          </div>
-          <div className="pdf-export-col">
             <div className="pdf-export-field">
               <label>CEL:</label>
               <div className="pdf-export-field-value">{paciente.cel || ""}</div>
             </div>
           </div>
-        </div>
 
-        {/* Dados dos Pais */}
-        <h2>DADOS DOS PAIS</h2>
-        
-        <div className="pdf-export-row">
-          <div className="pdf-export-col">
-            <div className="pdf-export-field">
-              <label>NOME DA MÃE:</label>
-              <div className="pdf-export-field-value">{paciente.nome_mae || ""}</div>
-            </div>
+          {/* Nome da Mãe */}
+          <div className="pdf-export-field with-icon">
+            <label>NOME DA MÃE:</label>
+            <div className="pdf-export-field-value">{paciente.nome_mae || ""}</div>
           </div>
-          <div className="pdf-export-col">
+
+          {/* Idade e Profissão da Mãe */}
+          <div className="pdf-export-row">
+            <div className="pdf-export-field">
+              <label>IDADE:</label>
+              <div className="pdf-export-field-value">{paciente.idade_mae || ""}</div>
+            </div>
             <div className="pdf-export-field">
               <label>PROFISSÃO:</label>
               <div className="pdf-export-field-value">{paciente.profissao_mae || ""}</div>
             </div>
           </div>
-        </div>
 
-        <div className="pdf-export-row">
-          <div className="pdf-export-col">
-            <div className="pdf-export-field">
-              <label>NOME DO PAI:</label>
-              <div className="pdf-export-field-value">{paciente.nome_pai || ""}</div>
-            </div>
+          {/* Nome do Pai */}
+          <div className="pdf-export-field with-icon">
+            <label>NOME DO PAI:</label>
+            <div className="pdf-export-field-value">{paciente.nome_pai || ""}</div>
           </div>
-          <div className="pdf-export-col">
+
+          {/* Idade e Profissão do Pai */}
+          <div className="pdf-export-row">
+            <div className="pdf-export-field">
+              <label>IDADE:</label>
+              <div className="pdf-export-field-value">{paciente.idade_pai || ""}</div>
+            </div>
             <div className="pdf-export-field">
               <label>PROFISSÃO:</label>
               <div className="pdf-export-field-value">{paciente.profissao_pai || ""}</div>
             </div>
           </div>
-        </div>
 
-        {/* Motivo da Consulta */}
-        <div className="pdf-export-text-field">
-          <label>QUAL O MOTIVO DA CONSULTA:</label>
-          <div className="pdf-export-text-field-value">{paciente.motivo_consulta || ""}</div>
-        </div>
+          {/* Motivo da Consulta */}
+          <div className="pdf-export-text-field">
+            <label>QUAL O MOTIVO DA CONSULTA:</label>
+            <div className="pdf-export-text-field-value">{paciente.motivo_consulta || ""}</div>
+          </div>
 
-        <div className="pdf-export-text-field">
-          <label>HOUVE ALGUMA ALTERAÇÃO DURANTE A GESTAÇÃO:</label>
-          <div className="pdf-export-text-field-value">{paciente.alteracao_gestacao || ""}</div>
-        </div>
+          {/* Alteração na Gestação */}
+          <div className="pdf-export-text-field">
+            <label>MÃE TEVE ALGUMA ALTERAÇÃO DURANTE A GESTAÇÃO:</label>
+            <div className="pdf-export-text-field-value">{paciente.alteracao_gestacao || ""}</div>
+          </div>
 
-        {/* Necessidades Especiais */}
-        <div className="pdf-export-checkbox-field">
-          <label>POSSUI NECESSIDADE ESPECIAL:</label>
-          <div className="pdf-export-checkbox-container">
-            <div className="pdf-export-checkbox">
-              <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.necessidade_especial) === "SIM" ? "X" : ""}</span>
-              <span className="pdf-export-checkbox-label">SIM</span>
+          {/* Necessidade Especial */}
+          <div className="pdf-export-checkbox-field">
+            <label>POSSUI NECESSIDADE ESPECIAL?</label>
+            <div className="pdf-export-checkbox-container">
+              <div className="pdf-export-checkbox">
+                <div className={`pdf-export-checkbox-box ${formatarSimNao(paciente.necessidade_especial) === "SIM" ? "checked" : ""}`}>
+                  {formatarSimNao(paciente.necessidade_especial) === "SIM" ? "SIM" : "SIM"}
+                </div>
+              </div>
+              <div className="pdf-export-checkbox">
+                <div className={`pdf-export-checkbox-box ${formatarSimNao(paciente.necessidade_especial) === "NÃO" ? "checked" : ""}`}>
+                  {formatarSimNao(paciente.necessidade_especial) === "NÃO" ? "NÃO" : "NÃO"}
+                </div>
+              </div>
             </div>
-            <div className="pdf-export-checkbox">
-              <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.necessidade_especial) === "NÃO" ? "X" : ""}</span>
-              <span className="pdf-export-checkbox-label">NÃO</span>
+            <div className="pdf-export-qual-field">{paciente.qual_necessidade || ""}</div>
+          </div>
+
+          {/* Comprometimento de Coordenação */}
+          <div className="pdf-export-checkbox-field">
+            <label>POSSUI COMPROMETIMENTO DE COORDENAÇÃO MOTORA?</label>
+            <div className="pdf-export-checkbox-container">
+              <div className="pdf-export-checkbox">
+                <div className={`pdf-export-checkbox-box ${formatarSimNao(paciente.comprometimento_coordenacao) === "SIM" ? "checked" : ""}`}>
+                  {formatarSimNao(paciente.comprometimento_coordenacao) === "SIM" ? "SIM" : "SIM"}
+                </div>
+              </div>
+              <div className="pdf-export-checkbox">
+                <div className={`pdf-export-checkbox-box ${formatarSimNao(paciente.comprometimento_coordenacao) === "NÃO" ? "checked" : ""}`}>
+                  {formatarSimNao(paciente.comprometimento_coordenacao) === "NÃO" ? "NÃO" : "NÃO"}
+                </div>
+              </div>
             </div>
+            <div className="pdf-export-qual-field">{paciente.qual_coordenacao || ""}</div>
+          </div>
+
+          {/* Comprometimento Visual */}
+          <div className="pdf-export-checkbox-field">
+            <label>POSSUI COMPROMETIMENTO VISUAL?:</label>
+            <div className="pdf-export-checkbox-container">
+              <div className="pdf-export-checkbox">
+                <div className={`pdf-export-checkbox-box ${formatarSimNao(paciente.comprometimento_visual) === "SIM" ? "checked" : ""}`}>
+                  {formatarSimNao(paciente.comprometimento_visual) === "SIM" ? "SIM" : "SIM"}
+                </div>
+              </div>
+              <div className="pdf-export-checkbox">
+                <div className={`pdf-export-checkbox-box ${formatarSimNao(paciente.comprometimento_visual) === "NÃO" ? "checked" : ""}`}>
+                  {formatarSimNao(paciente.comprometimento_visual) === "NÃO" ? "NÃO" : "NÃO"}
+                </div>
+              </div>
+            </div>
+            <div className="pdf-export-qual-field">{paciente.qual_visual || ""}</div>
           </div>
         </div>
 
-        <div className="pdf-export-text-field">
-          <label>QUAL:</label>
-          <div className="pdf-export-text-field-value">{paciente.qual_necessidade || ""}</div>
-        </div>
-
-        <div className="pdf-export-checkbox-field">
-          <label>POSSUI COMPROMETIMENTO DE COORDENAÇÃO MOTORA:</label>
-          <div className="pdf-export-checkbox-container">
-            <div className="pdf-export-checkbox">
-              <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.comprometimento_coordenacao) === "SIM" ? "X" : ""}</span>
-              <span className="pdf-export-checkbox-label">SIM</span>
+        {/* Coluna Direita */}
+        <div className="pdf-export-column">
+          {/* Comprometimento de Comunicação */}
+          <div className="pdf-export-checkbox-field">
+            <label>POSSUI COMPROMETIMENTO DE COMUNICAÇÃO?</label>
+            <div className="pdf-export-checkbox-container">
+              <div className="pdf-export-checkbox">
+                <div className={`pdf-export-checkbox-box ${formatarSimNao(paciente.comprometimento_comunicacao) === "SIM" ? "checked" : ""}`}>
+                  {formatarSimNao(paciente.comprometimento_comunicacao) === "SIM" ? "SIM" : "SIM"}
+                </div>
+              </div>
+              <div className="pdf-export-checkbox">
+                <div className={`pdf-export-checkbox-box ${formatarSimNao(paciente.comprometimento_comunicacao) === "NÃO" ? "checked" : ""}`}>
+                  {formatarSimNao(paciente.comprometimento_comunicacao) === "NÃO" ? "NÃO" : "NÃO"}
+                </div>
+              </div>
             </div>
-            <div className="pdf-export-checkbox">
-              <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.comprometimento_coordenacao) === "NÃO" ? "X" : ""}</span>
-              <span className="pdf-export-checkbox-label">NÃO</span>
+            <div className="pdf-export-qual-field">{paciente.qual_comunicacao || ""}</div>
+          </div>
+
+          {/* Como reage quando contrariado */}
+          <div className="pdf-export-text-field">
+            <label>COMO O PACIENTE REAGE QUANDO É CONTRARIADO?</label>
+            <div className="pdf-export-text-field-value">{paciente.reacao_contrariado || ""}</div>
+          </div>
+
+          {/* Como reage com profissionais */}
+          <div className="pdf-export-text-field">
+            <label>COMO O PACIENTE REAGE DIANTE DE PROFISSIONAIS DA SAÚDE?</label>
+            <div className="pdf-export-text-field-value">{paciente.reacao_profissionais || ""}</div>
+          </div>
+
+          {/* Sofreu Cirurgia */}
+          <div className="pdf-export-checkbox-field">
+            <label>SOFREU ALGUMA CIRURGIA ?</label>
+            <div className="pdf-export-checkbox-container">
+              <div className="pdf-export-checkbox">
+                <div className={`pdf-export-checkbox-box ${formatarSimNao(paciente.sofreu_cirurgia) === "SIM" ? "checked" : ""}`}>
+                  {formatarSimNao(paciente.sofreu_cirurgia) === "SIM" ? "SIM" : "SIM"}
+                </div>
+              </div>
+              <div className="pdf-export-checkbox">
+                <div className={`pdf-export-checkbox-box ${formatarSimNao(paciente.sofreu_cirurgia) === "NÃO" ? "checked" : ""}`}>
+                  {formatarSimNao(paciente.sofreu_cirurgia) === "NÃO" ? "NÃO" : "NÃO"}
+                </div>
+              </div>
+            </div>
+            <div className="pdf-export-qual-field">{paciente.qual_cirurgia || ""}</div>
+          </div>
+
+          {/* Alterações Sanguíneas */}
+          <div className="pdf-export-checkbox-field">
+            <label>ALTERAÇÕES SANGUÍNEAS?</label>
+            <div className="pdf-export-checkbox-container">
+              <div className="pdf-export-checkbox">
+                <div className={`pdf-export-checkbox-box ${formatarSimNao(paciente.alteracoes_sanguineas) === "SIM" ? "checked" : ""}`}>
+                  {formatarSimNao(paciente.alteracoes_sanguineas) === "SIM" ? "SIM" : "SIM"}
+                </div>
+              </div>
+              <div className="pdf-export-checkbox">
+                <div className={`pdf-export-checkbox-box ${formatarSimNao(paciente.alteracoes_sanguineas) === "NÃO" ? "checked" : ""}`}>
+                  {formatarSimNao(paciente.alteracoes_sanguineas) === "NÃO" ? "NÃO" : "NÃO"}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="pdf-export-text-field">
-          <label>QUAL:</label>
-          <div className="pdf-export-text-field-value">{paciente.qual_coordenacao || ""}</div>
-        </div>
-
-        <div className="pdf-export-checkbox-field">
-          <label>POSSUI COMPROMETIMENTO VISUAL:</label>
-          <div className="pdf-export-checkbox-container">
-            <div className="pdf-export-checkbox">
-              <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.comprometimento_visual) === "SIM" ? "X" : ""}</span>
-              <span className="pdf-export-checkbox-label">SIM</span>
-            </div>
-            <div className="pdf-export-checkbox">
-              <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.comprometimento_visual) === "NÃO" ? "X" : ""}</span>
-              <span className="pdf-export-checkbox-label">NÃO</span>
+          {/* Problemas Respiratórios */}
+          <div className="pdf-export-checkbox-field">
+            <label>PROBLEMAS RESPIRATÓRIOS?</label>
+            <div className="pdf-export-checkbox-container">
+              <div className="pdf-export-checkbox">
+                <div className={`pdf-export-checkbox-box ${formatarSimNao(paciente.problemas_respiratorios) === "SIM" ? "checked" : ""}`}>
+                  {formatarSimNao(paciente.problemas_respiratorios) === "SIM" ? "SIM" : "SIM"}
+                </div>
+              </div>
+              <div className="pdf-export-checkbox">
+                <div className={`pdf-export-checkbox-box ${formatarSimNao(paciente.problemas_respiratorios) === "NÃO" ? "checked" : ""}`}>
+                  {formatarSimNao(paciente.problemas_respiratorios) === "NÃO" ? "NÃO" : "NÃO"}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="pdf-export-text-field">
-          <label>QUAL:</label>
-          <div className="pdf-export-text-field-value">{paciente.qual_visual || ""}</div>
-        </div>
-
-        <div className="pdf-export-checkbox-field">
-          <label>POSSUI COMPROMETIMENTO DE COMUNICAÇÃO MOTORA:</label>
-          <div className="pdf-export-checkbox-container">
-            <div className="pdf-export-checkbox">
-              <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.comprometimento_comunicacao) === "SIM" ? "X" : ""}</span>
-              <span className="pdf-export-checkbox-label">SIM</span>
-            </div>
-            <div className="pdf-export-checkbox">
-              <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.comprometimento_comunicacao) === "NÃO" ? "X" : ""}</span>
-              <span className="pdf-export-checkbox-label">NÃO</span>
+          {/* Problemas Hepáticos */}
+          <div className="pdf-export-checkbox-field">
+            <label>PROBLEMAS HEPÁTICOS?</label>
+            <div className="pdf-export-checkbox-container">
+              <div className="pdf-export-checkbox">
+                <div className={`pdf-export-checkbox-box ${formatarSimNao(paciente.problemas_hepaticos) === "SIM" ? "checked" : ""}`}>
+                  {formatarSimNao(paciente.problemas_hepaticos) === "SIM" ? "SIM" : "SIM"}
+                </div>
+              </div>
+              <div className="pdf-export-checkbox">
+                <div className={`pdf-export-checkbox-box ${formatarSimNao(paciente.problemas_hepaticos) === "NÃO" ? "checked" : ""}`}>
+                  {formatarSimNao(paciente.problemas_hepaticos) === "NÃO" ? "NÃO" : "NÃO"}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="pdf-export-text-field">
-          <label>QUAL:</label>
-          <div className="pdf-export-text-field-value">{paciente.qual_comunicacao || ""}</div>
-        </div>
-
-        <div className="pdf-export-text-field">
-          <label>COMO REAGE QUANDO CONTRARIADO:</label>
-          <div className="pdf-export-text-field-value">{paciente.reacao_contrariado || ""}</div>
-        </div>
-
-        <div className="pdf-export-text-field">
-          <label>COMO REAGE COM PROFISSIONAIS:</label>
-          <div className="pdf-export-text-field-value">{paciente.reacao_profissionais || ""}</div>
-        </div>
-
-        {/* Histórico Médico */}
-        <h2>HISTÓRICO MÉDICO</h2>
-
-        <div className="pdf-export-checkbox-field">
-          <label>SOFREU CIRURGIA:</label>
-          <div className="pdf-export-checkbox-container">
-            <div className="pdf-export-checkbox">
-              <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.sofreu_cirurgia) === "SIM" ? "X" : ""}</span>
-              <span className="pdf-export-checkbox-label">SIM</span>
-            </div>
-            <div className="pdf-export-checkbox">
-              <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.sofreu_cirurgia) === "NÃO" ? "X" : ""}</span>
-              <span className="pdf-export-checkbox-label">NÃO</span>
+          {/* Cardiopatias */}
+          <div className="pdf-export-checkbox-field">
+            <label>CARDIOPATIAS?</label>
+            <div className="pdf-export-checkbox-container">
+              <div className="pdf-export-checkbox">
+                <div className={`pdf-export-checkbox-box ${formatarSimNao(paciente.cardiopatias) === "SIM" ? "checked" : ""}`}>
+                  {formatarSimNao(paciente.cardiopatias) === "SIM" ? "SIM" : "SIM"}
+                </div>
+              </div>
+              <div className="pdf-export-checkbox">
+                <div className={`pdf-export-checkbox-box ${formatarSimNao(paciente.cardiopatias) === "NÃO" ? "checked" : ""}`}>
+                  {formatarSimNao(paciente.cardiopatias) === "NÃO" ? "NÃO" : "NÃO"}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="pdf-export-text-field">
-          <label>QUAL:</label>
-          <div className="pdf-export-text-field-value">{paciente.qual_cirurgia || ""}</div>
-        </div>
-
-        <div className="pdf-export-checkbox-field">
-          <label>ALTERAÇÕES SANGUÍNEAS:</label>
-          <div className="pdf-export-checkbox-container">
-            <div className="pdf-export-checkbox">
-              <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.alteracoes_sanguineas) === "SIM" ? "X" : ""}</span>
-              <span className="pdf-export-checkbox-label">SIM</span>
-            </div>
-            <div className="pdf-export-checkbox">
-              <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.alteracoes_sanguineas) === "NÃO" ? "X" : ""}</span>
-              <span className="pdf-export-checkbox-label">NÃO</span>
+          {/* Problemas Gástricos */}
+          <div className="pdf-export-checkbox-field">
+            <label>PROBLEMAS GÁSTRICOS?</label>
+            <div className="pdf-export-checkbox-container">
+              <div className="pdf-export-checkbox">
+                <div className={`pdf-export-checkbox-box ${formatarSimNao(paciente.problemas_gastricos) === "SIM" ? "checked" : ""}`}>
+                  {formatarSimNao(paciente.problemas_gastricos) === "SIM" ? "SIM" : "SIM"}
+                </div>
+              </div>
+              <div className="pdf-export-checkbox">
+                <div className={`pdf-export-checkbox-box ${formatarSimNao(paciente.problemas_gastricos) === "NÃO" ? "checked" : ""}`}>
+                  {formatarSimNao(paciente.problemas_gastricos) === "NÃO" ? "NÃO" : "NÃO"}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="pdf-export-checkbox-field">
-          <label>PROBLEMAS RESPIRATÓRIOS:</label>
-          <div className="pdf-export-checkbox-container">
-            <div className="pdf-export-checkbox">
-              <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.problemas_respiratorios) === "SIM" ? "X" : ""}</span>
-              <span className="pdf-export-checkbox-label">SIM</span>
-            </div>
-            <div className="pdf-export-checkbox">
-              <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.problemas_respiratorios) === "NÃO" ? "X" : ""}</span>
-              <span className="pdf-export-checkbox-label">NÃO</span>
-            </div>
+          {/* Alergias Medicamento */}
+          <div className="pdf-export-field">
+            <label>ALERGIAS MEDICAMENTO:</label>
+            <div className="pdf-export-field-value">{paciente.alergias_medicamento || ""}</div>
           </div>
-        </div>
 
-        <div className="pdf-export-checkbox-field">
-          <label>PROBLEMAS HEPÁTICOS:</label>
-          <div className="pdf-export-checkbox-container">
-            <div className="pdf-export-checkbox">
-              <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.problemas_hepaticos) === "SIM" ? "X" : ""}</span>
-              <span className="pdf-export-checkbox-label">SIM</span>
-            </div>
-            <div className="pdf-export-checkbox">
-              <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.problemas_hepaticos) === "NÃO" ? "X" : ""}</span>
-              <span className="pdf-export-checkbox-label">NÃO</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="pdf-export-checkbox-field">
-          <label>CARDIOPATIAS:</label>
-          <div className="pdf-export-checkbox-container">
-            <div className="pdf-export-checkbox">
-              <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.cardiopatias) === "SIM" ? "X" : ""}</span>
-              <span className="pdf-export-checkbox-label">SIM</span>
-            </div>
-            <div className="pdf-export-checkbox">
-              <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.cardiopatias) === "NÃO" ? "X" : ""}</span>
-              <span className="pdf-export-checkbox-label">NÃO</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="pdf-export-checkbox-field">
-          <label>PROBLEMAS GÁSTRICOS:</label>
-          <div className="pdf-export-checkbox-container">
-            <div className="pdf-export-checkbox">
-              <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.problemas_gastricos) === "SIM" ? "X" : ""}</span>
-              <span className="pdf-export-checkbox-label">SIM</span>
-            </div>
-            <div className="pdf-export-checkbox">
-              <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.problemas_gastricos) === "NÃO" ? "X" : ""}</span>
-              <span className="pdf-export-checkbox-label">NÃO</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Alergias */}
-        <div className="pdf-export-row">
-          <div className="pdf-export-col">
+          {/* Alergias Alimentar e Respiratória */}
+          <div className="pdf-export-row">
             <div className="pdf-export-field">
-              <label>ALERGIAS MEDICAMENTOS:</label>
-              <div className="pdf-export-field-value">{paciente.alergias_medicamento || ""}</div>
-            </div>
-          </div>
-          <div className="pdf-export-col">
-            <div className="pdf-export-field">
-              <label>ALERGIAS ALIMENTARES:</label>
+              <label>ALERGIAS ALIMENTAR:</label>
               <div className="pdf-export-field-value">{paciente.alergias_alimentar || ""}</div>
             </div>
-          </div>
-        </div>
-
-        <div className="pdf-export-field">
-          <label>ALERGIAS RESPIRATÓRIAS:</label>
-          <div className="pdf-export-field-value">{paciente.alergias_respiratoria || ""}</div>
-        </div>
-
-        <div className="pdf-export-text-field">
-          <label>TRATAMENTOS ATUAIS:</label>
-          <div className="pdf-export-text-field-value">{paciente.tratamentos_atuais || ""}</div>
-        </div>
-
-        {/* Acompanhamentos */}
-        <h2>ACOMPANHAMENTOS E HÁBITOS</h2>
-
-        <div className="pdf-export-row">
-          <div className="pdf-export-col">
-            <div className="pdf-export-checkbox-field">
-              <label>FONOAUDIOLOGIA:</label>
-              <div className="pdf-export-checkbox-container">
-                <div className="pdf-export-checkbox">
-                  <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.fonoaudiologia) === "SIM" ? "X" : ""}</span>
-                  <span className="pdf-export-checkbox-label">SIM</span>
-                </div>
-                <div className="pdf-export-checkbox">
-                  <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.fonoaudiologia) === "NÃO" ? "X" : ""}</span>
-                  <span className="pdf-export-checkbox-label">NÃO</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="pdf-export-col">
-            <div className="pdf-export-checkbox-field">
-              <label>FISIOTERAPIA:</label>
-              <div className="pdf-export-checkbox-container">
-                <div className="pdf-export-checkbox">
-                  <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.fisioterapia) === "SIM" ? "X" : ""}</span>
-                  <span className="pdf-export-checkbox-label">SIM</span>
-                </div>
-                <div className="pdf-export-checkbox">
-                  <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.fisioterapia) === "NÃO" ? "X" : ""}</span>
-                  <span className="pdf-export-checkbox-label">NÃO</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="pdf-export-row">
-          <div className="pdf-export-col">
-            <div className="pdf-export-checkbox-field">
-              <label>PSICOLOGIA:</label>
-              <div className="pdf-export-checkbox-container">
-                <div className="pdf-export-checkbox">
-                  <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.psicologia) === "SIM" ? "X" : ""}</span>
-                  <span className="pdf-export-checkbox-label">SIM</span>
-                </div>
-                <div className="pdf-export-checkbox">
-                  <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.psicologia) === "NÃO" ? "X" : ""}</span>
-                  <span className="pdf-export-checkbox-label">NÃO</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="pdf-export-col">
-            <div className="pdf-export-checkbox-field">
-              <label>PSIQUIÁTRICO:</label>
-              <div className="pdf-export-checkbox-container">
-                <div className="pdf-export-checkbox">
-                  <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.psiquiatrico) === "SIM" ? "X" : ""}</span>
-                  <span className="pdf-export-checkbox-label">SIM</span>
-                </div>
-                <div className="pdf-export-checkbox">
-                  <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.psiquiatrico) === "NÃO" ? "X" : ""}</span>
-                  <span className="pdf-export-checkbox-label">NÃO</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="pdf-export-checkbox-field">
-          <label>TERAPIA OCUPACIONAL:</label>
-          <div className="pdf-export-checkbox-container">
-            <div className="pdf-export-checkbox">
-              <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.psiquiatrico_to) === "SIM" ? "X" : ""}</span>
-              <span className="pdf-export-checkbox-label">SIM</span>
-            </div>
-            <div className="pdf-export-checkbox">
-              <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.psiquiatrico_to) === "NÃO" ? "X" : ""}</span>
-              <span className="pdf-export-checkbox-label">NÃO</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="pdf-export-text-field">
-          <label>OUTRO TRATAMENTO:</label>
-          <div className="pdf-export-text-field-value">{paciente.outro_tratamento || ""}</div>
-        </div>
-
-        <div className="pdf-export-text-field">
-          <label>PORTADOR DE IST:</label>
-          <div className="pdf-export-text-field-value">{paciente.portador_ist || ""}</div>
-        </div>
-
-        {/* Hábitos Alimentares */}
-        <h2>HÁBITOS ALIMENTARES E COMPORTAMENTAIS</h2>
-
-        <div className="pdf-export-row">
-          <div className="pdf-export-col">
-            <div className="pdf-export-checkbox-field">
-              <label>MAMA NO PEITO:</label>
-              <div className="pdf-export-checkbox-container">
-                <div className="pdf-export-checkbox">
-                  <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.mama_peito) === "SIM" ? "X" : ""}</span>
-                  <span className="pdf-export-checkbox-label">SIM</span>
-                </div>
-                <div className="pdf-export-checkbox">
-                  <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.mama_peito) === "NÃO" ? "X" : ""}</span>
-                  <span className="pdf-export-checkbox-label">NÃO</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="pdf-export-col">
-            <div className="pdf-export-checkbox-field">
-              <label>JÁ MAMOU NO PEITO:</label>
-              <div className="pdf-export-checkbox-container">
-                <div className="pdf-export-checkbox">
-                  <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.mamou_peito) === "SIM" ? "X" : ""}</span>
-                  <span className="pdf-export-checkbox-label">SIM</span>
-                </div>
-                <div className="pdf-export-checkbox">
-                  <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.mamou_peito) === "NÃO" ? "X" : ""}</span>
-                  <span className="pdf-export-checkbox-label">NÃO</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="pdf-export-field">
-          <label>ATÉ QUANDO MAMOU:</label>
-          <div className="pdf-export-field-value">{paciente.ate_quando_mamou || ""}</div>
-        </div>
-
-        <div className="pdf-export-row">
-          <div className="pdf-export-col">
-            <div className="pdf-export-checkbox-field">
-              <label>TOMA MAMADEIRA:</label>
-              <div className="pdf-export-checkbox-container">
-                <div className="pdf-export-checkbox">
-                  <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.toma_mamadeira) === "SIM" ? "X" : ""}</span>
-                  <span className="pdf-export-checkbox-label">SIM</span>
-                </div>
-                <div className="pdf-export-checkbox">
-                  <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.toma_mamadeira) === "NÃO" ? "X" : ""}</span>
-                  <span className="pdf-export-checkbox-label">NÃO</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="pdf-export-col">
-            <div className="pdf-export-checkbox-field">
-              <label>JÁ TOMOU MAMADEIRA:</label>
-              <div className="pdf-export-checkbox-container">
-                <div className="pdf-export-checkbox">
-                  <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.tomou_mamadeira) === "SIM" ? "X" : ""}</span>
-                  <span className="pdf-export-checkbox-label">SIM</span>
-                </div>
-                <div className="pdf-export-checkbox">
-                  <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.tomou_mamadeira) === "NÃO" ? "X" : ""}</span>
-                  <span className="pdf-export-checkbox-label">NÃO</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="pdf-export-field">
-          <label>ATÉ QUANDO MAMADEIRA:</label>
-          <div className="pdf-export-field-value">{paciente.ate_quando_mamadeira || ""}</div>
-        </div>
-
-        <div className="pdf-export-text-field">
-          <label>ENGASGA OU VOMITA:</label>
-          <div className="pdf-export-text-field-value">{paciente.engasga_vomita || ""}</div>
-        </div>
-
-        <div className="pdf-export-text-field">
-          <label>CHUPA O DEDO:</label>
-          <div className="pdf-export-text-field-value">{paciente.chupa_dedo || ""}</div>
-        </div>
-
-        <div className="pdf-export-text-field">
-          <label>CHUPA CHUPETA:</label>
-          <div className="pdf-export-text-field-value">{paciente.chupa_chupeta || ""}</div>
-        </div>
-
-        <div className="pdf-export-text-field">
-          <label>OUTROS HÁBITOS:</label>
-          <div className="pdf-export-text-field-value">{paciente.outros_habitos || ""}</div>
-        </div>
-
-        <div className="pdf-export-text-field">
-          <label>RANGE OS DENTES:</label>
-          <div className="pdf-export-text-field-value">{paciente.range_dentes || ""}</div>
-        </div>
-
-        {/* Histórico Odontológico */}
-        <h2>HISTÓRICO ODONTOLÓGICO</h2>
-
-        <div className="pdf-export-field">
-          <label>ANOS NA PRIMEIRA CONSULTA:</label>
-          <div className="pdf-export-field-value">{paciente.anos_primeira_consulta || ""}</div>
-        </div>
-
-        <div className="pdf-export-text-field">
-          <label>TRATAMENTO ANTERIOR:</label>
-          <div className="pdf-export-text-field-value">{paciente.tratamento_anterior || ""}</div>
-        </div>
-
-        <div className="pdf-export-checkbox-field">
-          <label>JÁ FOI AO DENTISTA:</label>
-          <div className="pdf-export-checkbox-container">
-            <div className="pdf-export-checkbox">
-              <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.foi_dentista) === "SIM" ? "X" : ""}</span>
-              <span className="pdf-export-checkbox-label">SIM</span>
-            </div>
-            <div className="pdf-export-checkbox">
-              <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.foi_dentista) === "NÃO" ? "X" : ""}</span>
-              <span className="pdf-export-checkbox-label">NÃO</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="pdf-export-text-field">
-          <label>QUAL DENTISTA:</label>
-          <div className="pdf-export-text-field-value">{paciente.qual_dentista || ""}</div>
-        </div>
-
-        {/* Higiene Bucal */}
-        <h2>HIGIENE BUCAL</h2>
-
-        <div className="pdf-export-row">
-          <div className="pdf-export-col">
             <div className="pdf-export-field">
-              <label>ESCOVA UTILIZADA:</label>
-              <div className="pdf-export-field-value">{paciente.escova_usa || ""}</div>
+              <label>ALERGIAS RESPIRATÓRIA:</label>
+              <div className="pdf-export-field-value">{paciente.alergias_respiratoria || ""}</div>
             </div>
           </div>
-          <div className="pdf-export-col">
-            <div className="pdf-export-field">
-              <label>CREME DENTAL:</label>
-              <div className="pdf-export-field-value">{paciente.creme_dental || ""}</div>
-            </div>
-          </div>
-        </div>
 
-        <div className="pdf-export-row">
-          <div className="pdf-export-col">
-            <div className="pdf-export-field">
-              <label>QUEM FAZ HIGIENE:</label>
-              <div className="pdf-export-field-value">{paciente.higiene_bucal || ""}</div>
-            </div>
+          {/* Tratamentos Atuais */}
+          <div className="pdf-export-text-field">
+            <label>TRATAMENTOS ATUAIS :</label>
+            <div className="pdf-export-text-field-value">{paciente.tratamentos_atuais || ""}</div>
           </div>
-          <div className="pdf-export-col">
-            <div className="pdf-export-field">
-              <label>VEZES POR DIA:</label>
-              <div className="pdf-export-field-value">{paciente.vezes_dia_higiene || ""}</div>
-            </div>
+
+          {/* Qual Escova Usa */}
+          <div className="pdf-export-field">
+            <label>QUAL ESCOVA USA:</label>
+            <div className="pdf-export-field-value">{paciente.escova_usa || ""}</div>
           </div>
-        </div>
 
-        <div className="pdf-export-row">
-          <div className="pdf-export-col">
-            <div className="pdf-export-checkbox-field">
-              <label>TOMOU ANESTESIA:</label>
-              <div className="pdf-export-checkbox-container">
-                <div className="pdf-export-checkbox">
-                  <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.tomou_anestesia) === "SIM" ? "X" : ""}</span>
-                  <span className="pdf-export-checkbox-label">SIM</span>
-                </div>
-                <div className="pdf-export-checkbox">
-                  <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.tomou_anestesia) === "NÃO" ? "X" : ""}</span>
-                  <span className="pdf-export-checkbox-label">NÃO</span>
-                </div>
-              </div>
-            </div>
+          {/* Qual Creme Dental Usa */}
+          <div className="pdf-export-field">
+            <label>QUAL CREME DENTAL USA:</label>
+            <div className="pdf-export-field-value">{paciente.creme_dental || ""}</div>
           </div>
-          <div className="pdf-export-col">
-            <div className="pdf-export-checkbox-field">
-              <label>GENGIVA SANGRA:</label>
-              <div className="pdf-export-checkbox-container">
-                <div className="pdf-export-checkbox">
-                  <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.gengiva_sangra) === "SIM" ? "X" : ""}</span>
-                  <span className="pdf-export-checkbox-label">SIM</span>
-                </div>
-                <div className="pdf-export-checkbox">
-                  <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.gengiva_sangra) === "NÃO" ? "X" : ""}</span>
-                  <span className="pdf-export-checkbox-label">NÃO</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="pdf-export-row">
-          <div className="pdf-export-col">
-            <div className="pdf-export-checkbox-field">
-              <label>EXTRAÇÕES DENTÁRIAS:</label>
-              <div className="pdf-export-checkbox-container">
-                <div className="pdf-export-checkbox">
-                  <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.extracoes_dentarias) === "SIM" ? "X" : ""}</span>
-                  <span className="pdf-export-checkbox-label">SIM</span>
-                </div>
-                <div className="pdf-export-checkbox">
-                  <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.extracoes_dentarias) === "NÃO" ? "X" : ""}</span>
-                  <span className="pdf-export-checkbox-label">NÃO</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="pdf-export-col">
-            <div className="pdf-export-checkbox-field">
-              <label>ESCOVA A LÍNGUA:</label>
-              <div className="pdf-export-checkbox-container">
-                <div className="pdf-export-checkbox">
-                  <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.escova_lingua) === "SIM" ? "X" : ""}</span>
-                  <span className="pdf-export-checkbox-label">SIM</span>
-                </div>
-                <div className="pdf-export-checkbox">
-                  <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.escova_lingua) === "NÃO" ? "X" : ""}</span>
-                  <span className="pdf-export-checkbox-label">NÃO</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="pdf-export-checkbox-field">
-          <label>USA FIO DENTAL:</label>
-          <div className="pdf-export-checkbox-container">
-            <div className="pdf-export-checkbox">
-              <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.usa_fio_dental) === "SIM" ? "X" : ""}</span>
-              <span className="pdf-export-checkbox-label">SIM</span>
-            </div>
-            <div className="pdf-export-checkbox">
-              <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.usa_fio_dental) === "NÃO" ? "X" : ""}</span>
-              <span className="pdf-export-checkbox-label">NÃO</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Alimentação */}
-        <div className="pdf-export-text-field">
-          <label>ALIMENTAÇÃO:</label>
-          <div className="pdf-export-text-field-value">{paciente.alimentacao_notas || ""}</div>
-        </div>
-
-        <div className="pdf-export-text-field">
-          <label>INFORMAÇÕES ADICIONAIS:</label>
-          <div className="pdf-export-text-field-value">{paciente.informacoes_adicionais || ""}</div>
-        </div>
-
-        {/* Responsável */}
-        <div className="pdf-export-field">
-          <label>NOME DO RESPONSÁVEL:</label>
-          <div className="pdf-export-field-value">{paciente.responsavel_nome || ""}</div>
-        </div>
-
-        {/* Assinatura */}
-        <div className="pdf-export-signature">
-          <div className="pdf-export-signature-line"></div>
-          <div className="pdf-export-signature-text">ASSINATURA DO RESPONSÁVEL</div>
         </div>
       </div>
     </div>
