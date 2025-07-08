@@ -267,7 +267,7 @@ export default function VisualizarFicha() {
         </div>
 
         {/* TODOS OS BLOCOS COMPLETOS ABAIXO */}
-        <div className="space-y-8" id="ficha-content">
+        <div className="space-y-4" id="ficha-content">
           {/* -------- DADOS PESSOAIS -------- */}
           <div className="glass-card rounded-2xl p-6 space-y-6">
             <div className="flex items-center space-x-3 mb-6">
