@@ -72,7 +72,6 @@ export default function VisualizarFicha() {
     const margin = 10;
     const logoW = 30, logoH = 13;
 
-    // Header
     if (logoBase64 && logoBase64.length > 30) {
       pdf.addImage(logoBase64, "PNG", margin, 7, logoW, logoH);
     }
@@ -96,7 +95,6 @@ export default function VisualizarFicha() {
     pdf.setLineWidth(0.3);
     pdf.line(margin, 26, pdfWidth - margin, 26);
 
-    // Footer
     pdf.setLineWidth(0.1);
     pdf.line(margin, pdfHeight - 15, pdfWidth - margin, pdfHeight - 15);
     pdf.setFontSize(9);
@@ -135,10 +133,7 @@ export default function VisualizarFicha() {
         const bloco = blocoRefs.current[i];
         if (!bloco) continue;
         bloco.classList.add("pdf-export");
-        // Aguarda renderização correta do CSS
-        // eslint-disable-next-line no-await-in-loop
         await new Promise((r) => setTimeout(r, 10));
-        // eslint-disable-next-line no-await-in-loop
         const canvas = await html2canvas(bloco, {
           scale: 2,
           useCORS: true,
@@ -152,8 +147,7 @@ export default function VisualizarFicha() {
         bloco.classList.remove("pdf-export");
       }
 
-      // px para mm
-      const pxPerMm = blocoImgs[0] ? blocoImgs[0].widthPx / imgWidthMm : 2.6; // fallback
+      const pxPerMm = blocoImgs[0] ? blocoImgs[0].widthPx / imgWidthMm : 2.6;
 
       let actualY = headerFooterHeight;
       let pageNum = 1;
@@ -161,11 +155,9 @@ export default function VisualizarFicha() {
       let heightsByPage = [];
       let blocksByPage = [[]];
 
-      // Pré-calcula distribuição dos blocos por página
       for (let i = 0; i < blocoImgs.length; i++) {
         const blocoH_mm = blocoImgs[i].heightPx / pxPerMm;
         if (actualY + blocoH_mm > pdfHeight - headerFooterHeight - 2) {
-          // Nova página
           heightsByPage.push(actualY);
           actualY = headerFooterHeight;
           blocksByPage.push([]);
@@ -176,7 +168,6 @@ export default function VisualizarFicha() {
       }
       heightsByPage.push(actualY);
 
-      // Monta o PDF
       pageNum = 1;
       for (let p = 0; p < blocksByPage.length; p++) {
         if (p > 0) pdf.addPage();
@@ -244,7 +235,6 @@ export default function VisualizarFicha() {
   };
   const formatarTexto = (texto) => texto || "Não informado";
 
-  // Blocos separados e referenciados para exportação PDF bloco a bloco
   blocoRefs.current = [];
   let blocoIdx = 0;
   function blocoRef(idx) {
@@ -281,42 +271,30 @@ export default function VisualizarFicha() {
           </button>
         </div>
         <div className="space-y-4" id="ficha-content">
-          {/* Cada bloco recebe ref={blocoRef(idx++)} */}
-          <div ref={blocoRef(blocoIdx++)} className="glass-card rounded-2xl p-6 space-y-6">{/* ...Dados Pessoais... */}</div>
-          <div ref={blocoRef(blocoIdx++)} className="glass-card rounded-2xl p-6 space-y-6">{/* ...Dados dos Pais... */}</div>
-          <div ref={blocoRef(blocoIdx++)} className="glass-card rounded-2xl p-6 space-y-6">{/* ...Motivo da Consulta... */}</div>
-          <div ref={blocoRef(blocoIdx++)} className="glass-card rounded-2xl p-6 space-y-6">{/* ...Necessidades Especiais... */}</div>
-          <div ref={blocoRef(blocoIdx++)} className="glass-card rounded-2xl p-6 space-y-6">{/* ...Histórico Médico... */}</div>
-          <div ref={blocoRef(blocoIdx++)} className="glass-card rounded-2xl p-6 space-y-6">{/* ...Acompanhamentos e Hábitos... */}</div>
-          <div ref={blocoRef(blocoIdx++)} className="glass-card rounded-2xl p-6 space-y-6">{/* ...Hábitos Alimentares e Comportamentais... */}</div>
-          <div ref={blocoRef(blocoIdx++)} className="glass-card rounded-2xl p-6 space-y-6">{/* ...Histórico Odontológico... */}</div>
-          <div ref={blocoRef(blocoIdx++)} className="glass-card rounded-2xl p-6 space-y-6">{/* ...Alimentação e Outras Informações... */}</div>
-          <div ref={blocoRef(blocoIdx++)} className="glass-card rounded-2xl p-6 space-y-6">{/* ...Higiene Bucal... */}</div>
+          <div ref={blocoRef(blocoIdx++)} className="glass-card rounded-2xl p-6 space-y-6"></div>
+          <div ref={blocoRef(blocoIdx++)} className="glass-card rounded-2xl p-6 space-y-6"></div>
+          <div ref={blocoRef(blocoIdx++)} className="glass-card rounded-2xl p-6 space-y-6"></div>
+          <div ref={blocoRef(blocoIdx++)} className="glass-card rounded-2xl p-6 space-y-6"></div>
+          <div ref={blocoRef(blocoIdx++)} className="glass-card rounded-2xl p-6 space-y-6"></div>
+          <div ref={blocoRef(blocoIdx++)} className="glass-card rounded-2xl p-6 space-y-6"></div>
+          <div ref={blocoRef(blocoIdx++)} className="glass-card rounded-2xl p-6 space-y-6"></div>
+          <div ref={blocoRef(blocoIdx++)} className="glass-card rounded-2xl p-6 space-y-6"></div>
+          <div ref={blocoRef(blocoIdx++)} className="glass-card rounded-2xl p-6 space-y-6"></div>
+          <div ref={blocoRef(blocoIdx++)} className="glass-card rounded-2xl p-6 space-y-6"></div>
           {paciente.mapa_dental && paciente.mapa_dental.length > 0 && (
             <div ref={blocoRef(blocoIdx++)}>
               <MapaDental
                 selectedTeeth={paciente.mapa_dental}
-                onTeethChange={() => {}} // Read-only
+                onTeethChange={() => {}}
               />
             </div>
           )}
           {consultas.length > 0 && (
-            <div ref={blocoRef(blocoIdx++)} className="glass-card rounded-2xl p-6 space-y-6">{/* ...Histórico de Consultas... */}</div>
+            <div ref={blocoRef(blocoIdx++)} className="glass-card rounded-2xl p-6 space-y-6"></div>
           )}
-          <div ref={blocoRef(blocoIdx++)} className="glass-card rounded-2xl p-6 space-y-6">{/* ...Responsável... */}</div>
+          <div ref={blocoRef(blocoIdx++)} className="glass-card rounded-2xl p-6 space-y-6"></div>
         </div>
       </div>
     </div>
   );
 }
-
-// CSS PARA O PDF (adicione ao seu global.css)
-/*
-.pdf-export,
-.pdf-export * {
-  background: #fff !important;
-  color: #000 !important;
-  box-shadow: none !important;
-  filter: none !important;
-}
-*/
