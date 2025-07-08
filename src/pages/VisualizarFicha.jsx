@@ -11,7 +11,100 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import MapaDental from "../components/MapaDental";
+
+// #region Odontograma Component
+// This new component replaces the old MapaDental
+const odontogramImageUrl = "https://i.ibb.co/bX2s2yS/odontogram.png";
+
+// Configuration for tooth positions (top, left, width, height in %)
+const toothLayout = {
+  // Dentes Superiores Permanentes
+  18: { top: 22.5, left: 5.9, width: 3.5, height: 17 }, 17: { top: 22.5, left: 9.6, width: 3.5, height: 17 },
+  16: { top: 22.5, left: 13.3, width: 3.5, height: 17 }, 15: { top: 22.5, left: 17, width: 3.2, height: 17 },
+  14: { top: 22.5, left: 20.4, width: 3.2, height: 17 }, 13: { top: 22.5, left: 23.8, width: 3.2, height: 17 },
+  12: { top: 22.5, left: 27.2, width: 3.2, height: 17 }, 11: { top: 22.5, left: 30.6, width: 3.2, height: 17 },
+  21: { top: 22.5, left: 34.5, width: 3.2, height: 17 }, 22: { top: 22.5, left: 37.9, width: 3.2, height: 17 },
+  23: { top: 22.5, left: 41.3, width: 3.2, height: 17 }, 24: { top: 22.5, left: 44.7, width: 3.2, height: 17 },
+  25: { top: 22.5, left: 48.1, width: 3.2, height: 17 }, 26: { top: 22.5, left: 51.8, width: 3.5, height: 17 },
+  27: { top: 22.5, left: 55.5, width: 3.5, height: 17 }, 28: { top: 22.5, left: 59.2, width: 3.5, height: 17 },
+  // Dentes Superiores Decíduos
+  55: { top: 12.5, left: 17, width: 3.2, height: 8 }, 54: { top: 12.5, left: 20.4, width: 3.2, height: 8 },
+  53: { top: 12.5, left: 23.8, width: 3.2, height: 8 }, 52: { top: 12.5, left: 27.2, width: 3.2, height: 8 },
+  51: { top: 12.5, left: 30.6, width: 3.2, height: 8 }, 61: { top: 12.5, left: 34.5, width: 3.2, height: 8 },
+  62: { top: 12.5, left: 37.9, width: 3.2, height: 8 }, 63: { top: 12.5, left: 41.3, width: 3.2, height: 8 },
+  64: { top: 12.5, left: 44.7, width: 3.2, height: 8 }, 65: { top: 12.5, left: 48.1, width: 3.2, height: 8 },
+  // Dentes Inferiores Permanentes
+  48: { top: 41.5, left: 5.9, width: 3.5, height: 17 }, 47: { top: 41.5, left: 9.6, width: 3.5, height: 17 },
+  46: { top: 41.5, left: 13.3, width: 3.5, height: 17 }, 45: { top: 41.5, left: 17, width: 3.2, height: 17 },
+  44: { top: 41.5, left: 20.4, width: 3.2, height: 17 }, 43: { top: 41.5, left: 23.8, width: 3.2, height: 17 },
+  42: { top: 41.5, left: 27.2, width: 3.2, height: 17 }, 41: { top: 41.5, left: 30.6, width: 3.2, height: 17 },
+  31: { top: 41.5, left: 34.5, width: 3.2, height: 17 }, 32: { top: 41.5, left: 37.9, width: 3.2, height: 17 },
+  33: { top: 41.5, left: 41.3, width: 3.2, height: 17 }, 34: { top: 41.5, left: 44.7, width: 3.2, height: 17 },
+  35: { top: 41.5, left: 48.1, width: 3.2, height: 17 }, 36: { top: 41.5, left: 51.8, width: 3.5, height: 17 },
+  37: { top: 41.5, left: 55.5, width: 3.5, height: 17 }, 38: { top: 41.5, left: 59.2, width: 3.5, height: 17 },
+  // Dentes Inferiores Decíduos
+  85: { top: 60.5, left: 17, width: 3.2, height: 8 }, 84: { top: 60.5, left: 20.4, width: 3.2, height: 8 },
+  83: { top: 60.5, left: 23.8, width: 3.2, height: 8 }, 82: { top: 60.5, left: 27.2, width: 3.2, height: 8 },
+  81: { top: 60.5, left: 30.6, width: 3.2, height: 8 }, 71: { top: 60.5, left: 34.5, width: 3.2, height: 8 },
+  72: { top: 60.5, left: 37.9, width: 3.2, height: 8 }, 73: { top: 60.5, left: 41.3, width: 3.2, height: 8 },
+  74: { top: 60.5, left: 44.7, width: 3.2, height: 8 }, 75: { top: 60.5, left: 48.1, width: 3.2, height: 8 },
+};
+
+const statusConfig = {
+    'hígido': { color: 'rgba(6, 182, 212, 0.7)', label: 'Hígido' },
+    'cariado': { color: 'rgba(239, 68, 68, 0.7)', label: 'Cariado' },
+    'tratado': { color: 'rgba(59, 130, 246, 0.7)', label: 'Tratado' },
+    'extraído': { color: 'rgba(107, 114, 128, 0.7)', label: 'Extraído' },
+};
+
+const Odontograma = ({ selectedTeeth = [], onTeethChange, readOnly = false }) => {
+    // In read-only mode, we don't need click handlers
+    const handleToothClick = (toothId) => {
+        if (readOnly) return;
+        // This is where you would implement the logic to cycle through statuses
+        // For this component, we assume the parent handles the state change logic
+    };
+
+    const getToothStatus = (toothId) => {
+        const tooth = selectedTeeth.find(t => t.denteId === toothId);
+        return tooth ? tooth.status : 'hígido';
+    };
+
+    return (
+        <div className="glass-card rounded-2xl p-6 space-y-6">
+            <div className="flex items-center space-x-3 mb-4">
+                <SmilePlus className="w-6 h-6 text-emerald-300" />
+                <h2 className="text-xl font-semibold text-white">Odontograma</h2>
+            </div>
+            <div className="relative w-full" style={{ paddingBottom: '56.25%' /* 16:9 Aspect Ratio */ }}>
+                <img src={odontogramImageUrl} alt="Odontograma" className="absolute top-0 left-0 w-full h-full object-contain" />
+                {Object.entries(toothLayout).map(([toothId, pos]) => {
+                    const status = getToothStatus(toothId);
+                    const style = {
+                        position: 'absolute',
+                        top: `${pos.top}%`,
+                        left: `${pos.left}%`,
+                        width: `${pos.width}%`,
+                        height: `${pos.height}%`,
+                        backgroundColor: statusConfig[status]?.color || 'transparent',
+                        cursor: readOnly ? 'default' : 'pointer',
+                        borderRadius: '2px',
+                    };
+                    return <div key={toothId} style={style} onClick={() => handleToothClick(toothId)} />;
+                })}
+            </div>
+            <div className="flex justify-center gap-4 mt-4 text-xs text-white flex-wrap">
+                {Object.entries(statusConfig).map(([status, { color, label }]) => (
+                    <div key={status} className="flex items-center gap-2">
+                        <div className="w-4 h-4 rounded" style={{ backgroundColor: color }}></div>
+                        <span>{label}</span>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
+// #endregion
 
 // Loads logo from public/logo.png
 async function getLogoBase64() {
@@ -641,11 +734,11 @@ export default function VisualizarFicha() {
             </div>
           </div>
 
-          {/* -------- MAPA DENTAL -------- */}
-          {paciente.mapa_dental && paciente.mapa_dental.length > 0 && (
-            <MapaDental
+          {/* -------- ODONTOGRAMA -------- */}
+          {paciente.mapa_dental && (
+            <Odontograma
               selectedTeeth={paciente.mapa_dental}
-              onTeethChange={() => {}} // Read-only
+              onTeethChange={() => {}} // Read-only in this view
               readOnly={true}
             />
           )}
