@@ -584,20 +584,6 @@ export default function VisualizarFicha() {
               </div>
 
               <div className="pdf-export-checkbox-field">
-                <label>🧑‍⚕️ Psiquiátrico</label>
-                <div className="pdf-export-checkbox-container">
-                  <div className="pdf-export-checkbox">
-                    <div className={`pdf-export-checkbox-box ${paciente.psiquiatrico === true ? 'checked' : ''}`}>
-                      {paciente.psiquiatrico === true ? 'SIM' : 'SIM'}
-                    </div>
-                    <span className="pdf-export-checkbox-label">SIM</span>
-                  </div>
-                  <div className="pdf-export-checkbox">
-                    <div className={`pdf-export-checkbox-box ${paciente.psiquiatrico === false ? 'checked' : ''}`}>
-                      {paciente.psiquiatrico === false ? 'NÃO' : 'NÃO'}
-</div>
-
-              <div className="pdf-export-checkbox-field">
                 <label>🏥 Outros Acompanhamentos</label>
                 <div className="pdf-export-checkbox-container">
                   <div className="pdf-export-checkbox">
