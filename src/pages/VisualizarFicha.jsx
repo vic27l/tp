@@ -83,7 +83,6 @@ export default function VisualizarFicha() {
             clonedElement.style.maxWidth = 'none';
             clonedElement.style.padding = '30px';
             clonedElement.style.fontSize = '13px';
-            clonedElement.style.lineHeight = '1.5';
             clonedElement.style.background = '#ffffff';
             clonedElement.style.color = '#000000';
             
@@ -177,10 +176,10 @@ export default function VisualizarFicha() {
         orientation: 'portrait',
         unit: 'mm',
         format: 'a4',
-        compress: true
+        compress: false
       });
 
-      const imgData = canvas.toDataURL('image/png', 0.7);
+      const imgData = canvas.toDataURL('image/png');
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
       const margin = 10;
