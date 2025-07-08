@@ -50,212 +50,62 @@ export default function VisualizarFicha() {
     }
   };
 
-  const handleExportPDF = async () => {
+  const handleExportPDF = () => {
     setIsExporting(true);
     const input = document.getElementById('ficha-content');
-    
     if (!input) {
       setIsExporting(false);
       return;
     }
-
-    try {
-      // Adicionar classe para estilos específicos do PDF
-      input.classList.add('pdf-export');
-      
-      // Aguardar um pouco para os estilos serem aplicados
-      await new Promise(resolve => setTimeout(resolve, 300));
-
-      // Configurações otimizadas para o html2canvas
-      const canvas = await html2canvas(input, {
+  
+    // Add PDF export class
+    input.classList.add('pdf-export');
+  
+    // Wait for styles to apply
+    setTimeout(() => {
+      html2canvas(input, {
+        scale: 1.5, // Balanced scale for quality and performance
         useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff',
-        logging: false,
+        logging: false, // Disable logging for cleaner console
+        allowTaint: true, // Allow tainting the canvas from cross-origin images (if any)
+        backgroundColor: '#ffffff', // White background
         width: input.scrollWidth,
         height: input.scrollHeight,
-        windowHeight: input.scrollHeight,
-        onclone: (clonedDoc) => {
-            
-            // Ajustar cards para melhor formatação
-            const cards = clonedElement.querySelectorAll('.glass-card');
-            cards.forEach(card => {
-              card.style.backgroundColor = '#f8f9fa';
-              card.style.border = '1px solid #dee2e6';
-              card.style.borderRadius = '8px';
-              card.style.padding = '20px';
-              card.style.marginBottom = '20px';
-              card.style.pageBreakInside = 'avoid';
-              card.style.boxShadow = 'none';
-            });
-
-            // Ajustar textos e labels
-            const labels = clonedElement.querySelectorAll('label');
-            labels.forEach(label => {
-              label.style.color = '#495057';
-              label.style.fontWeight = '600';
-              label.style.fontSize = '11px';
-              label.style.marginBottom = '3px';
-              label.style.display = 'block';
-            });
-
-            const texts = clonedElement.querySelectorAll('p');
-            texts.forEach(text => {
-              text.style.color = '#212529';
-              text.style.fontSize = '13px';
-              text.style.lineHeight = '1.4';
-              text.style.marginBottom = '6px';
-            });
-
-            // Ajustar títulos
-            const h1Elements = clonedElement.querySelectorAll('h1');
-            h1Elements.forEach(h1 => {
-              h1.style.color = '#198754';
-              h1.style.fontSize = '22px';
-              h1.style.fontWeight = '700';
-              h1.style.marginBottom = '10px';
-            });
-
-            const h2Elements = clonedElement.querySelectorAll('h2');
-            h2Elements.forEach(h2 => {
-              h2.style.color = '#198754';
-              h2.style.fontSize = '16px';
-              h2.style.fontWeight = '700';
-              h2.style.marginBottom = '12px';
-              h2.style.borderBottom = '2px solid #198754';
-              h2.style.paddingBottom = '6px';
-            });
-
-            const h3Elements = clonedElement.querySelectorAll('h3');
-            h3Elements.forEach(h3 => {
-              h3.style.color = '#198754';
-              h3.style.fontSize = '14px';
-              h3.style.fontWeight = '600';
-              h3.style.marginBottom = '8px';
-            });
-
-            // Ajustar grids
-            const grids = clonedElement.querySelectorAll('.grid');
-            grids.forEach(grid => {
-              grid.style.display = 'grid';
-              grid.style.gap = '12px';
-              grid.style.marginBottom = '12px';
-            });
-
-            // Remover ícones e elementos não necessários
-            const icons = clonedElement.querySelectorAll('svg');
-            icons.forEach(icon => {
-              icon.style.display = 'none';
-            });
-
-            const buttons = clonedElement.querySelectorAll('button');
-            buttons.forEach(button => {
-              button.style.display = 'none';
-            });
-
-            // Remover elementos com classes específicas
-            const glassButtons = clonedElement.querySelectorAll('.glass-button');
-            glassButtons.forEach(btn => {
-              btn.style.display = 'none';
-            });
-          }
-        }
-      });
-
-      // Criar PDF com configurações otimizadas
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4',
-        compress: false
-      });
-
-      const imgData = canvas.toDataURL('image/png');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const margin = 10;
-      const contentWidth = pdfWidth - (margin * 2);
-      
-      // Calcular dimensões da imagem
-      const imgProps = pdf.getImageProperties(imgData);
-      const imgRatio = imgProps.height / imgProps.width;
-      const contentHeight = contentWidth * imgRatio;
-      
-      let currentY = margin;
-      let remainingHeight = contentHeight;
-
-      // Adicionar cabeçalho na primeira página
-      pdf.setFontSize(18);
-      pdf.setTextColor(25, 135, 84);
-      pdf.text(`Ficha de Anamnese - ${paciente.nome_crianca}`, margin, currentY);
-      currentY += 12;
-      
-      pdf.setFontSize(10);
-      pdf.setTextColor(108, 117, 125);
-      pdf.text(`Gerado em: ${format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}`, margin, currentY);
-      currentY += 8;
-
-      // Calcular altura disponível para o conteúdo
-      let availableHeight = pdfHeight - currentY - margin;
-      
-      // Adicionar imagem
-      if (remainingHeight <= availableHeight) {
-        // Se cabe em uma página
-        pdf.addImage(imgData, 'PNG', margin, currentY, contentWidth, contentHeight);
-      } else {
-        // Se precisa de múltiplas páginas
-        let sourceY = 0;
-        const totalSourceHeight = imgProps.height;
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: input.scrollWidth,
+        windowHeight: input.scrollHeight
+      }).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const imgProps = pdf.getImageProperties(imgData);
+        const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
         
-        while (remainingHeight > 0) {
-          const pageHeight = Math.min(remainingHeight, availableHeight);
-          const sourceHeight = (pageHeight / contentHeight) * totalSourceHeight;
-          
-          // Adicionar a imagem cortada
-          pdf.addImage(
-            imgData, 
-            'PNG', 
-            margin, 
-            currentY, 
-            contentWidth, 
-            pageHeight,
-            undefined,
-            'FAST'
-          );
-          
-          remainingHeight -= pageHeight;
-          sourceY += sourceHeight;
-          
-          if (remainingHeight > 0) {
-            pdf.addPage();
-            currentY = margin;
-            
-            // Adicionar cabeçalho nas páginas subsequentes
-            pdf.setFontSize(12);
-            pdf.setTextColor(25, 135, 84);
-            pdf.text(`${paciente.nome_crianca} - Continuação`, margin, currentY);
-            currentY += 8;
-            
-            // Recalcular altura disponível
-            availableHeight = pdfHeight - currentY - margin;
-          }
+        let heightLeft = imgHeight;
+        let position = 0;
+  
+        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
+        heightLeft -= pdfHeight;
+  
+        while (heightLeft > 0) {
+          position = heightLeft - pdfHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, 'PNG', 0, -position, pdfWidth, imgHeight);
+          heightLeft -= pdfHeight;
         }
-      }
-
-      // Salvar PDF
-      const fileName = `ficha_anamnese_${paciente.nome_crianca.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
-      pdf.save(fileName);
-      
-    } catch (error) {
-      console.error("Erro ao exportar PDF:", error);
-      alert("Erro ao exportar PDF. Tente novamente.");
-    } finally {
-      // Remover classe de PDF
-      if (input) {
+        
+        pdf.save(`ficha_${paciente.nome_crianca.replace(/\s+/g, '_')}.pdf`);
+        
+      }).catch(err => {
+        console.error("Error exporting PDF:", err);
+      }).finally(() => {
+        // Remove PDF export class
         input.classList.remove('pdf-export');
-      }
-      setIsExporting(false);
-    }
+        setIsExporting(false);
+      });
+    }, 100);
   };
 
   if (isLoading) {
@@ -327,91 +177,6 @@ export default function VisualizarFicha() {
             <span>{isExporting ? "Exportando..." : "Exportar PDF"}</span>
           </button>
         </div>
-
-        {/* Estilos específicos para PDF */}
-        <style jsx>{`
-          .pdf-export {
-            background: white !important;
-            color: black !important;
-            font-family: Arial, sans-serif !important;
-            width: 1000px !important;
-            max-width: none !important;
-            margin: 0 !important;
-            padding: 30px !important;
-            box-shadow: none !important;
-          }
-          
-          .pdf-export * {
-            background: transparent !important;
-            color: inherit !important;
-            text-shadow: none !important;
-            box-shadow: none !important;
-          }
-          
-          .pdf-export .glass-card {
-            background: #f8f9fa !important;
-            border: 1px solid #dee2e6 !important;
-            border-radius: 8px !important;
-            padding: 20px !important;
-            margin-bottom: 20px !important;
-            page-break-inside: avoid !important;
-          }
-          
-          .pdf-export h1 {
-            color: #198754 !important;
-            font-size: 22px !important;
-            margin-bottom: 10px !important;
-          }
-          
-          .pdf-export h2 {
-            color: #198754 !important;
-            font-size: 16px !important;
-            font-weight: 700 !important;
-            margin-bottom: 12px !important;
-            border-bottom: 2px solid #198754 !important;
-            padding-bottom: 6px !important;
-          }
-          
-          .pdf-export h3 {
-            color: #198754 !important;
-            font-size: 14px !important;
-            font-weight: 600 !important;
-            margin-bottom: 8px !important;
-          }
-          
-          .pdf-export label {
-            color: #495057 !important;
-            font-weight: 600 !important;
-            font-size: 11px !important;
-            margin-bottom: 3px !important;
-            display: block !important;
-          }
-          
-          .pdf-export p {
-            color: #212529 !important;
-            font-size: 13px !important;
-            line-height: 1.4 !important;
-            margin-bottom: 6px !important;
-          }
-          
-          .pdf-export .grid {
-            display: grid !important;
-            gap: 12px !important;
-            margin-bottom: 12px !important;
-          }
-          
-          .pdf-export svg {
-            display: none !important;
-          }
-          
-          .pdf-export .glass-button {
-            display: none !important;
-          }
-          
-          .pdf-export button {
-            display: none !important;
-          }
-        `}</style>
 
         <div className="space-y-8" id="ficha-content">
           {/* Dados Pessoais */}
