@@ -64,80 +64,111 @@ export default function VisualizarFicha() {
       input.classList.add('pdf-export');
       
       // Aguardar um pouco para os estilos serem aplicados
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise(resolve => setTimeout(resolve, 300));
 
       // Configurações otimizadas para o html2canvas
       const canvas = await html2canvas(input, {
-        scale: 2, // Maior qualidade
+        scale: 1.5, // Reduzido para melhor performance
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#ffffff',
         logging: false,
         width: input.scrollWidth,
         height: input.scrollHeight,
-        windowWidth: 1200, // Largura fixa para consistência
+        windowWidth: 1000, // Largura reduzida para melhor consistência
         windowHeight: input.scrollHeight,
         onclone: (clonedDoc) => {
           // Aplicar estilos específicos no documento clonado
           const clonedElement = clonedDoc.getElementById('ficha-content');
           if (clonedElement) {
-            clonedElement.style.width = '1200px';
-            clonedElement.style.padding = '40px';
-            clonedElement.style.fontSize = '14px';
-            clonedElement.style.lineHeight = '1.6';
+            clonedElement.style.width = '1000px';
+            clonedElement.style.maxWidth = 'none';
+            clonedElement.style.padding = '30px';
+            clonedElement.style.fontSize = '13px';
+            clonedElement.style.lineHeight = '1.5';
+            clonedElement.style.background = '#ffffff';
+            clonedElement.style.color = '#000000';
             
             // Ajustar cards para melhor formatação
             const cards = clonedElement.querySelectorAll('.glass-card');
             cards.forEach(card => {
               card.style.backgroundColor = '#f8f9fa';
-              card.style.border = '1px solid #e9ecef';
+              card.style.border = '1px solid #dee2e6';
               card.style.borderRadius = '8px';
-              card.style.padding = '24px';
-              card.style.marginBottom = '24px';
+              card.style.padding = '20px';
+              card.style.marginBottom = '20px';
               card.style.pageBreakInside = 'avoid';
+              card.style.boxShadow = 'none';
             });
 
-            // Ajustar textos
+            // Ajustar textos e labels
             const labels = clonedElement.querySelectorAll('label');
             labels.forEach(label => {
               label.style.color = '#495057';
               label.style.fontWeight = '600';
-              label.style.fontSize = '12px';
-              label.style.marginBottom = '4px';
+              label.style.fontSize = '11px';
+              label.style.marginBottom = '3px';
               label.style.display = 'block';
             });
 
             const texts = clonedElement.querySelectorAll('p');
             texts.forEach(text => {
               text.style.color = '#212529';
-              text.style.fontSize = '14px';
-              text.style.lineHeight = '1.5';
-              text.style.marginBottom = '8px';
+              text.style.fontSize = '13px';
+              text.style.lineHeight = '1.4';
+              text.style.marginBottom = '6px';
             });
 
             // Ajustar títulos
-            const headings = clonedElement.querySelectorAll('h2, h3');
-            headings.forEach(heading => {
-              heading.style.color = '#198754';
-              heading.style.fontSize = heading.tagName === 'H2' ? '18px' : '16px';
-              heading.style.fontWeight = '700';
-              heading.style.marginBottom = '16px';
-              heading.style.borderBottom = '2px solid #198754';
-              heading.style.paddingBottom = '8px';
+            const h1Elements = clonedElement.querySelectorAll('h1');
+            h1Elements.forEach(h1 => {
+              h1.style.color = '#198754';
+              h1.style.fontSize = '22px';
+              h1.style.fontWeight = '700';
+              h1.style.marginBottom = '10px';
+            });
+
+            const h2Elements = clonedElement.querySelectorAll('h2');
+            h2Elements.forEach(h2 => {
+              h2.style.color = '#198754';
+              h2.style.fontSize = '16px';
+              h2.style.fontWeight = '700';
+              h2.style.marginBottom = '12px';
+              h2.style.borderBottom = '2px solid #198754';
+              h2.style.paddingBottom = '6px';
+            });
+
+            const h3Elements = clonedElement.querySelectorAll('h3');
+            h3Elements.forEach(h3 => {
+              h3.style.color = '#198754';
+              h3.style.fontSize = '14px';
+              h3.style.fontWeight = '600';
+              h3.style.marginBottom = '8px';
             });
 
             // Ajustar grids
             const grids = clonedElement.querySelectorAll('.grid');
             grids.forEach(grid => {
               grid.style.display = 'grid';
-              grid.style.gap = '16px';
-              grid.style.marginBottom = '16px';
+              grid.style.gap = '12px';
+              grid.style.marginBottom = '12px';
             });
 
-            // Ajustar ícones (remover ou simplificar)
+            // Remover ícones e elementos não necessários
             const icons = clonedElement.querySelectorAll('svg');
             icons.forEach(icon => {
               icon.style.display = 'none';
+            });
+
+            const buttons = clonedElement.querySelectorAll('button');
+            buttons.forEach(button => {
+              button.style.display = 'none';
+            });
+
+            // Remover elementos com classes específicas
+            const glassButtons = clonedElement.querySelectorAll('.glass-button');
+            glassButtons.forEach(btn => {
+              btn.style.display = 'none';
             });
           }
         }
@@ -151,7 +182,7 @@ export default function VisualizarFicha() {
         compress: true
       });
 
-      const imgData = canvas.toDataURL('image/png', 0.8);
+      const imgData = canvas.toDataURL('image/png', 0.7);
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
       const margin = 10;
@@ -162,36 +193,37 @@ export default function VisualizarFicha() {
       const imgRatio = imgProps.height / imgProps.width;
       const contentHeight = contentWidth * imgRatio;
       
-      let yPosition = margin;
+      let currentY = margin;
       let remainingHeight = contentHeight;
 
       // Adicionar cabeçalho na primeira página
-      pdf.setFontSize(20);
+      pdf.setFontSize(18);
       pdf.setTextColor(25, 135, 84);
-      pdf.text(`Ficha de Anamnese - ${paciente.nome_crianca}`, margin, yPosition);
-      yPosition += 15;
+      pdf.text(`Ficha de Anamnese - ${paciente.nome_crianca}`, margin, currentY);
+      currentY += 12;
       
-      pdf.setFontSize(12);
+      pdf.setFontSize(10);
       pdf.setTextColor(108, 117, 125);
-      pdf.text(`Gerado em: ${format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}`, margin, yPosition);
-      yPosition += 10;
+      pdf.text(`Gerado em: ${format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}`, margin, currentY);
+      currentY += 8;
 
       // Calcular altura disponível para o conteúdo
-      const availableHeight = pdfHeight - yPosition - margin;
+      let availableHeight = pdfHeight - currentY - margin;
       
       // Adicionar imagem
       if (remainingHeight <= availableHeight) {
         // Se cabe em uma página
-        pdf.addImage(imgData, 'PNG', margin, yPosition, contentWidth, contentHeight);
+        pdf.addImage(imgData, 'PNG', margin, currentY, contentWidth, contentHeight);
       } else {
         // Se precisa de múltiplas páginas
-        let currentY = yPosition;
         let sourceY = 0;
+        const totalSourceHeight = imgProps.height;
         
         while (remainingHeight > 0) {
           const pageHeight = Math.min(remainingHeight, availableHeight);
-          const sourceHeight = (pageHeight / contentHeight) * imgProps.height;
+          const sourceHeight = (pageHeight / contentHeight) * totalSourceHeight;
           
+          // Adicionar a imagem cortada
           pdf.addImage(
             imgData, 
             'PNG', 
@@ -199,10 +231,8 @@ export default function VisualizarFicha() {
             currentY, 
             contentWidth, 
             pageHeight,
-            '', 
-            'FAST',
-            0,
-            sourceY
+            undefined,
+            'FAST'
           );
           
           remainingHeight -= pageHeight;
@@ -216,7 +246,7 @@ export default function VisualizarFicha() {
             pdf.setFontSize(12);
             pdf.setTextColor(25, 135, 84);
             pdf.text(`${paciente.nome_crianca} - Continuação`, margin, currentY);
-            currentY += 10;
+            currentY += 8;
             
             // Recalcular altura disponível
             availableHeight = pdfHeight - currentY - margin;
@@ -233,7 +263,9 @@ export default function VisualizarFicha() {
       alert("Erro ao exportar PDF. Tente novamente.");
     } finally {
       // Remover classe de PDF
-      input.classList.remove('pdf-export');
+      if (input) {
+        input.classList.remove('pdf-export');
+      }
       setIsExporting(false);
     }
   };
@@ -314,10 +346,10 @@ export default function VisualizarFicha() {
             background: white !important;
             color: black !important;
             font-family: Arial, sans-serif !important;
-            width: 1200px !important;
+            width: 1000px !important;
             max-width: none !important;
             margin: 0 !important;
-            padding: 40px !important;
+            padding: 30px !important;
             box-shadow: none !important;
           }
           
@@ -330,54 +362,54 @@ export default function VisualizarFicha() {
           
           .pdf-export .glass-card {
             background: #f8f9fa !important;
-            border: 1px solid #e9ecef !important;
+            border: 1px solid #dee2e6 !important;
             border-radius: 8px !important;
-            padding: 24px !important;
-            margin-bottom: 24px !important;
+            padding: 20px !important;
+            margin-bottom: 20px !important;
             page-break-inside: avoid !important;
           }
           
           .pdf-export h1 {
             color: #198754 !important;
-            font-size: 24px !important;
-            margin-bottom: 8px !important;
+            font-size: 22px !important;
+            margin-bottom: 10px !important;
           }
           
           .pdf-export h2 {
             color: #198754 !important;
-            font-size: 18px !important;
+            font-size: 16px !important;
             font-weight: 700 !important;
-            margin-bottom: 16px !important;
+            margin-bottom: 12px !important;
             border-bottom: 2px solid #198754 !important;
-            padding-bottom: 8px !important;
+            padding-bottom: 6px !important;
           }
           
           .pdf-export h3 {
             color: #198754 !important;
-            font-size: 16px !important;
+            font-size: 14px !important;
             font-weight: 600 !important;
-            margin-bottom: 12px !important;
+            margin-bottom: 8px !important;
           }
           
           .pdf-export label {
             color: #495057 !important;
             font-weight: 600 !important;
-            font-size: 12px !important;
-            margin-bottom: 4px !important;
+            font-size: 11px !important;
+            margin-bottom: 3px !important;
             display: block !important;
           }
           
           .pdf-export p {
             color: #212529 !important;
-            font-size: 14px !important;
-            line-height: 1.5 !important;
-            margin-bottom: 8px !important;
+            font-size: 13px !important;
+            line-height: 1.4 !important;
+            margin-bottom: 6px !important;
           }
           
           .pdf-export .grid {
             display: grid !important;
-            gap: 16px !important;
-            margin-bottom: 16px !important;
+            gap: 12px !important;
+            margin-bottom: 12px !important;
           }
           
           .pdf-export svg {
@@ -385,6 +417,10 @@ export default function VisualizarFicha() {
           }
           
           .pdf-export .glass-button {
+            display: none !important;
+          }
+          
+          .pdf-export button {
             display: none !important;
           }
         `}</style>
