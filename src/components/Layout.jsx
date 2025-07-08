@@ -7,9 +7,9 @@ export default function Layout({ children, currentPageName }) {
   const location = useLocation();
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-cover bg-center bg-no-repeat bg-fixed" style={{backgroundImage: 'url(/bg.png)'}}>
+    <div className="min-h-screen relative overflow-hidden bg-cover bg-center bg-no-repeat" style={{backgroundImage: 'url(/bg.png)'}}>
       {/* Background overlay for better readability */}
-      <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/85 via-teal-800/85 to-cyan-900/85"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/80 via-teal-700/80 to-cyan-800/80"></div>
       
       {/* Floating Particles */}
       <div className="floating-particles">
@@ -25,11 +25,11 @@ export default function Layout({ children, currentPageName }) {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-16 h-16 rounded-full flex items-center justify-center overflow-hidden bg-white/10 backdrop-blur-sm border border-white/20">
+              <div className="w-12 h-12 rounded-full flex items-center justify-center overflow-hidden bg-white/10 backdrop-blur-sm border border-white/20">
                 <img 
                   src="/logo.png" 
                   alt="Tio Paulo Logo" 
-                  className="w-14 h-14 object-contain"
+                  className="w-10 h-10 object-contain"
                 />
               </div>
               <div>
