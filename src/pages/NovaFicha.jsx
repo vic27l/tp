@@ -185,11 +185,24 @@ export default function NovaFicha() {
         await Consulta.bulkCreate(consultasPayload);
       }
       
+      alert('Ficha salva com sucesso!');
       // Redirecionar para o dashboard
       navigate(createPageUrl("Dashboard"));
     } catch (error) {
       console.error("Erro ao salvar paciente:", error);
-      alert('Erro ao salvar a ficha. Tente novamente.');
+      
+      // Mostrar erro mais detalhado
+      let errorMessage = 'Erro ao salvar a ficha. ';
+      if (error.message) {
+        errorMessage += error.message;
+      } else if (error.error_description) {
+        errorMessage += error.error_description;
+      } else {
+        errorMessage += 'Tente novamente.';
+      }
+      
+      alert(errorMessage);
+      console.error("Erro completo:", error);
     }
     
     setIsSubmitting(false);
