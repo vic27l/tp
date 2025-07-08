@@ -1,34 +1,15 @@
-import React, { useState, useEffect, useRef } from "react";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
+
+import React, { useState, useEffect } from "react";
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import { Paciente } from "@/entities/Paciente";
 import { Consulta } from "@/entities/Consulta";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import {
-  ArrowLeft, FileText, User, Heart, Stethoscope, Smile, Activity, Baby, SmilePlus,
-  Apple, Calendar, Loader2, Phone, MapPin, Download
-} from "lucide-react";
+import { ArrowLeft, FileText, User, Heart, Stethoscope, Smile, Activity, Baby, SmilePlus, Apple, Calendar, Edit3, Phone, MapPin, Download, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import MapaDental from "../components/MapaDental";
-
-// Loads logo from public/logo.png
-async function getLogoBase64() {
-  try {
-    const response = await fetch("/logo.png");
-    const blob = await response.blob();
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
-  } catch (error) {
-    console.error("Error loading logo:", error);
-    return null; // Return null if the logo can't be loaded
-  }
-}
 
 export default function VisualizarFicha() {
   const navigate = useNavigate();
@@ -36,25 +17,22 @@ export default function VisualizarFicha() {
   const [consultas, setConsultas] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
-  const contentRef = useRef(null);
-
+  
+  // Pegar o ID do paciente da URL
   const urlParams = new URLSearchParams(window.location.search);
-  const pacienteId = urlParams.get("id");
+  const pacienteId = urlParams.get('id');
 
   useEffect(() => {
     if (pacienteId) {
       loadPaciente();
       loadConsultas();
-    } else {
-        setIsLoading(false); // If no ID, stop loading
     }
-    // eslint-disable-next-line
   }, [pacienteId]);
 
   const loadPaciente = async () => {
     try {
       const pacientes = await Paciente.list();
-      const pacienteEncontrado = pacientes.find((p) => p.id === pacienteId);
+      const pacienteEncontrado = pacientes.find(p => p.id === pacienteId);
       setPaciente(pacienteEncontrado);
     } catch (error) {
       console.error("Erro ao carregar paciente:", error);
@@ -64,9 +42,7 @@ export default function VisualizarFicha() {
   const loadConsultas = async () => {
     try {
       const todasConsultas = await Consulta.list();
-      const consultasPaciente = todasConsultas
-        .filter((c) => c.paciente_id === pacienteId)
-        .sort((a,b) => new Date(b.data_atendimento) - new Date(a.data_atendimento));
+      const consultasPaciente = todasConsultas.filter(c => c.paciente_id === pacienteId);
       setConsultas(consultasPaciente);
     } catch (error) {
       console.error("Erro ao carregar consultas:", error);
@@ -75,122 +51,73 @@ export default function VisualizarFicha() {
     }
   };
 
-  const addHeaderAndFooter = (pdf, totalPages, paciente, logoBase64) => {
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
-    const margin = 10;
-    const logoW = 30, logoH = 13;
-
-    for (let i = 1; i <= totalPages; i++) {
-        pdf.setPage(i);
-
-        // Header
-        if (logoBase64) {
-            pdf.addImage(logoBase64, "PNG", margin, 7, logoW, logoH);
-        }
-        pdf.setFont("helvetica", "bold");
-        pdf.setFontSize(14);
-        pdf.text("Ficha de Anamnese Odontopediátrica", pdfWidth / 2, 16, { align: "center" });
-        pdf.setFont("helvetica", "normal");
-        pdf.setFontSize(9);
-        pdf.text(
-            "Exportado em: " + format(new Date(), "dd/MM/yyyy HH:mm"),
-            pdfWidth - margin,
-            14,
-            { align: "right" }
-        );
-        if (paciente && paciente.nome_crianca) {
-            pdf.setFontSize(10);
-            pdf.setTextColor(50, 50, 50);
-            pdf.text("Paciente: " + paciente.nome_crianca, margin, 24);
-            pdf.setTextColor(0, 0, 0);
-        }
-        pdf.setLineWidth(0.3);
-        pdf.line(margin, 26, pdfWidth - margin, 26);
-
-        // Footer
-        pdf.setLineWidth(0.1);
-        pdf.line(margin, pdfHeight - 15, pdfWidth - margin, pdfHeight - 15);
-        pdf.setFontSize(9);
-        pdf.setTextColor(120, 120, 120);
-        pdf.text(
-            `Página ${i} de ${totalPages}`,
-            pdfWidth / 2,
-            pdfHeight - 9,
-            { align: "center" }
-        );
-        pdf.text(
-            "Gerado pelo Sistema de Fichas",
-            margin,
-            pdfHeight - 9
-        );
-        pdf.setTextColor(0, 0, 0);
-    }
-  };
-
-  async function handleExportPDF() {
+  const handleExportPDF = () => {
     setIsExporting(true);
-    const container = contentRef.current;
-    if (!container) {
+    const input = document.getElementById('ficha-content');
+    if (!input) {
       setIsExporting(false);
       return;
     }
-
-    container.classList.add("pdf-export");
-
-    try {
-        const logoBase64 = await getLogoBase64();
-        const pdf = new jsPDF("p", "mm", "a4");
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const margin = 10;
-        const contentWidth = pdfWidth - (margin * 2);
-        const headerHeight = 30;
-        const footerHeight = 20;
-        const usablePdfHeight = pdf.internal.pageSize.getHeight() - headerHeight - footerHeight;
-        let currentY = headerHeight;
-
-        const contentBlocks = Array.from(container.children);
-
-        for (const block of contentBlocks) {
-            const canvas = await html2canvas(block, {
-                scale: 2,
-                useCORS: true,
-                backgroundColor: '#ffffff',
-            });
-
-            const imgData = canvas.toDataURL('image/png');
-            const imgWidth = canvas.width;
-            const imgHeight = canvas.height;
-            const ratio = contentWidth / imgWidth;
-            const imgHeightMm = imgHeight * ratio;
-
-            if (currentY + imgHeightMm > usablePdfHeight + headerHeight && currentY > headerHeight) {
-                pdf.addPage();
-                currentY = headerHeight;
-            }
-
-            pdf.addImage(imgData, 'PNG', margin, currentY, contentWidth, imgHeightMm);
-            currentY += imgHeightMm + 4;
-        }
-
-        const totalPages = pdf.internal.getNumberOfPages();
-        addHeaderAndFooter(pdf, totalPages, paciente, logoBase64);
-
-        pdf.save(`ficha_${paciente.nome_crianca.replace(/\s+/g, "_")}.pdf`);
-
-    } catch (err) {
-        console.error("Erro ao exportar PDF:", err);
-    } finally {
-        container.classList.remove("pdf-export");
-        setIsExporting(false);
-    }
-  }
+  
+    // Store original styles to restore them later
+    const originalStyle = {
+      padding: input.style.padding,
+      backgroundImage: input.style.backgroundImage,
+      backgroundColor: input.style.backgroundColor
+    };
+  
+    // Apply temporary styles for export to ensure the background is captured
+    // and layout is optimized for PDF.
+    // The glass-card effect uses backdrop-filter, which html2canvas doesn't fully support
+    // for background. Setting a solid background color or a simple gradient for capture.
+    input.style.padding = '2rem';
+    input.style.backgroundColor = '#1F2937'; // A dark gray background, similar to the overall theme
+    input.style.backgroundImage = 'none'; // Remove any complex background images that might cause issues
+  
+    html2canvas(input, {
+      scale: 2, // Increase scale for better quality
+      useCORS: true,
+      logging: false, // Disable logging for cleaner console
+      allowTaint: true, // Allow tainting the canvas from cross-origin images (if any)
+    }).then(canvas => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const imgProps = pdf.getImageProperties(imgData);
+      const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      
+      let heightLeft = imgHeight;
+      let position = 0;
+  
+      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
+      heightLeft -= pdfHeight;
+  
+      while (heightLeft > 0) {
+        position = -heightLeft + pdfHeight; // Adjust position for the next page
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
+        heightLeft -= pdfHeight;
+      }
+      
+      pdf.save(`ficha_${paciente.nome_crianca.replace(/\s+/g, '_')}.pdf`);
+      
+    }).catch(err => {
+      console.error("Error exporting PDF:", err);
+    }).finally(() => {
+      // Restore original styles regardless of success or failure
+      input.style.padding = originalStyle.padding;
+      input.style.backgroundColor = originalStyle.backgroundColor;
+      input.style.backgroundImage = originalStyle.backgroundImage;
+      setIsExporting(false);
+    });
+  };
 
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center">
-          <Loader2 className="animate-spin h-12 w-12 text-white mx-auto mb-4" />
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
           <p className="text-white">Carregando ficha...</p>
         </div>
       </div>
@@ -203,7 +130,7 @@ export default function VisualizarFicha() {
         <div className="glass-card rounded-2xl p-12 text-center max-w-2xl mx-auto">
           <FileText className="w-16 h-16 text-white/40 mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-white mb-2">Paciente não encontrado</h3>
-          <p className="text-white/70 mb-6">Não foi possível encontrar os dados deste paciente. Verifique se o ID na URL está correto.</p>
+          <p className="text-white/70 mb-6">Não foi possível encontrar os dados deste paciente.</p>
           <button
             onClick={() => navigate(createPageUrl("Dashboard"))}
             className="glass-button px-6 py-3 rounded-lg text-white font-semibold hover:bg-emerald-500/30 transition-all"
@@ -221,7 +148,9 @@ export default function VisualizarFicha() {
     return "Não informado";
   };
 
-  const formatarTexto = (texto) => texto || "Não informado";
+  const formatarTexto = (texto) => {
+    return texto || "Não informado";
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -254,14 +183,14 @@ export default function VisualizarFicha() {
           </button>
         </div>
 
-        {/* Content to be exported */}
-        <div className="space-y-2" ref={contentRef}>
-          {/* -------- DADOS PESSOAIS -------- */}
+        <div className="space-y-8" id="ficha-content">
+          {/* Dados Pessoais */}
           <div className="glass-card rounded-2xl p-6 space-y-6">
             <div className="flex items-center space-x-3 mb-6">
               <User className="w-6 h-6 text-emerald-300" />
               <h2 className="text-xl font-semibold text-white">Dados Pessoais</h2>
             </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="text-emerald-200 text-sm font-medium">Nome da Criança</label>
@@ -270,9 +199,10 @@ export default function VisualizarFicha() {
               <div>
                 <label className="text-emerald-200 text-sm font-medium">Data de Nascimento</label>
                 <p className="text-white">
-                  {paciente.data_nascimento
+                  {paciente.data_nascimento 
                     ? format(new Date(paciente.data_nascimento), "dd/MM/yyyy", { locale: ptBR })
-                    : "Não informado"}
+                    : "Não informado"
+                  }
                   {paciente.idade && <span className="text-emerald-200 ml-2">({paciente.idade} anos)</span>}
                 </p>
               </div>
@@ -302,11 +232,12 @@ export default function VisualizarFicha() {
             </div>
           </div>
 
-          {/* -------- DADOS DOS PAIS -------- */}
+          {/* Dados dos Pais */}
           <div className="glass-card rounded-2xl p-6 space-y-6">
             <h2 className="text-xl font-semibold text-white mb-6">Dados dos Pais</h2>
+            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="space-y-2">
+              <div className="space-y-4">
                 <h3 className="text-lg font-medium text-emerald-300">Mãe</h3>
                 <div>
                   <label className="text-emerald-200 text-sm font-medium">Nome</label>
@@ -323,7 +254,8 @@ export default function VisualizarFicha() {
                   </div>
                 </div>
               </div>
-              <div className="space-y-2">
+              
+              <div className="space-y-4">
                 <h3 className="text-lg font-medium text-emerald-300">Pai</h3>
                 <div>
                   <label className="text-emerald-200 text-sm font-medium">Nome</label>
@@ -343,12 +275,13 @@ export default function VisualizarFicha() {
             </div>
           </div>
 
-          {/* -------- MOTIVO DA CONSULTA -------- */}
+          {/* Motivo da Consulta */}
           <div className="glass-card rounded-2xl p-6 space-y-6">
             <div className="flex items-center space-x-3 mb-6">
               <FileText className="w-6 h-6 text-emerald-300" />
               <h2 className="text-xl font-semibold text-white">Motivo da Consulta</h2>
             </div>
+            
             <div className="space-y-4">
               <div>
                 <label className="text-emerald-200 text-sm font-medium">Motivo da consulta</label>
@@ -361,12 +294,13 @@ export default function VisualizarFicha() {
             </div>
           </div>
 
-          {/* -------- NECESSIDADES ESPECIAIS -------- */}
+          {/* Necessidades Especiais */}
           <div className="glass-card rounded-2xl p-6 space-y-6">
             <div className="flex items-center space-x-3 mb-6">
               <Heart className="w-6 h-6 text-emerald-300" />
               <h2 className="text-xl font-semibold text-white">Necessidades Especiais</h2>
             </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="text-emerald-200 text-sm font-medium">Necessidade especial</label>
@@ -396,7 +330,10 @@ export default function VisualizarFicha() {
                   <p className="text-emerald-200 text-sm mt-1">{paciente.qual_comunicacao}</p>
                 )}
               </div>
-               <div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
                 <label className="text-emerald-200 text-sm font-medium">Como reage quando contrariado</label>
                 <p className="text-white">{formatarTexto(paciente.reacao_contrariado)}</p>
               </div>
@@ -407,12 +344,13 @@ export default function VisualizarFicha() {
             </div>
           </div>
 
-          {/* -------- HISTÓRICO MÉDICO -------- */}
+          {/* Histórico Médico */}
           <div className="glass-card rounded-2xl p-6 space-y-6">
             <div className="flex items-center space-x-3 mb-6">
               <Stethoscope className="w-6 h-6 text-emerald-300" />
               <h2 className="text-xl font-semibold text-white">Histórico Médico</h2>
             </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="text-emerald-200 text-sm font-medium">Sofreu cirurgia</label>
@@ -442,9 +380,10 @@ export default function VisualizarFicha() {
                 <p className="text-white">{formatarSimNao(paciente.problemas_gastricos)}</p>
               </div>
             </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <label className="text-emerald-200 text-sm font-medium">Alergias a medicamentos</label>
+                <label className="text-emerald-200 text-sm font-medium">Alergias medicamentos</label>
                 <p className="text-white">{formatarTexto(paciente.alergias_medicamento)}</p>
               </div>
               <div>
@@ -456,151 +395,20 @@ export default function VisualizarFicha() {
                 <p className="text-white">{formatarTexto(paciente.alergias_respiratoria)}</p>
               </div>
             </div>
+            
             <div>
               <label className="text-emerald-200 text-sm font-medium">Tratamentos atuais</label>
               <p className="text-white">{formatarTexto(paciente.tratamentos_atuais)}</p>
             </div>
           </div>
 
-          {/* -------- ACOMPANHAMENTOS E HÁBITOS -------- */}
-          <div className="glass-card rounded-2xl p-6 space-y-6">
-            <div className="flex items-center space-x-3 mb-6">
-              <Activity className="w-6 h-6 text-emerald-300" />
-              <h2 className="text-xl font-semibold text-white">Acompanhamentos e Hábitos</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="text-emerald-200 text-sm font-medium">Fonoaudiologia</label>
-                <p className="text-white">{formatarSimNao(paciente.fonoaudiologia)}</p>
-              </div>
-              <div>
-                <label className="text-emerald-200 text-sm font-medium">Fisioterapia</label>
-                <p className="text-white">{formatarSimNao(paciente.fisioterapia)}</p>
-              </div>
-              <div>
-                <label className="text-emerald-200 text-sm font-medium">Psicologia</label>
-                <p className="text-white">{formatarSimNao(paciente.psicologia)}</p>
-              </div>
-              <div>
-                <label className="text-emerald-200 text-sm font-medium">Psiquiátrico</label>
-                <p className="text-white">{formatarSimNao(paciente.psiquiatrico)}</p>
-              </div>
-              <div>
-                <label className="text-emerald-200 text-sm font-medium">Terapia Ocupacional</label>
-                <p className="text-white">{formatarSimNao(paciente.psiquiatrico_to)}</p>
-              </div>
-              <div>
-                <label className="text-emerald-200 text-sm font-medium">Outro tratamento</label>
-                <p className="text-white">{formatarTexto(paciente.outro_tratamento)}</p>
-              </div>
-            </div>
-            <div>
-              <label className="text-emerald-200 text-sm font-medium">Portador de IST</label>
-              <p className="text-white">{formatarTexto(paciente.portador_ist)}</p>
-            </div>
-          </div>
-
-          {/* -------- HÁBITOS ALIMENTARES E COMPORTAMENTAIS -------- */}
-          <div className="glass-card rounded-2xl p-6 space-y-6">
-            <div className="flex items-center space-x-3 mb-6">
-              <Baby className="w-6 h-6 text-emerald-300" />
-              <h2 className="text-xl font-semibold text-white">Hábitos Alimentares e Comportamentais</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="text-emerald-200 text-sm font-medium">Mama no peito</label>
-                <p className="text-white">{formatarSimNao(paciente.mama_peito)}</p>
-              </div>
-              <div>
-                <label className="text-emerald-200 text-sm font-medium">Já mamou no peito</label>
-                <p className="text-white">{formatarSimNao(paciente.mamou_peito)}</p>
-                {paciente.ate_quando_mamou && (
-                  <p className="text-emerald-200 text-sm mt-1">Até: {paciente.ate_quando_mamou}</p>
-                )}
-              </div>
-              <div>
-                <label className="text-emerald-200 text-sm font-medium">Toma mamadeira</label>
-                <p className="text-white">{formatarSimNao(paciente.toma_mamadeira)}</p>
-              </div>
-              <div>
-                <label className="text-emerald-200 text-sm font-medium">Já tomou mamadeira</label>
-                <p className="text-white">{formatarSimNao(paciente.tomou_mamadeira)}</p>
-                {paciente.ate_quando_mamadeira && (
-                  <p className="text-emerald-200 text-sm mt-1">Até: {paciente.ate_quando_mamadeira}</p>
-                )}
-              </div>
-              <div>
-                <label className="text-emerald-200 text-sm font-medium">Engasga ou vomita</label>
-                <p className="text-white">{formatarTexto(paciente.engasga_vomita)}</p>
-              </div>
-              <div>
-                <label className="text-emerald-200 text-sm font-medium">Chupa o dedo</label>
-                <p className="text-white">{formatarTexto(paciente.chupa_dedo)}</p>
-              </div>
-              <div>
-                <label className="text-emerald-200 text-sm font-medium">Chupa chupeta</label>
-                <p className="text-white">{formatarTexto(paciente.chupa_chupeta)}</p>
-              </div>
-              <div>
-                <label className="text-emerald-200 text-sm font-medium">Outros hábitos</label>
-                <p className="text-white">{formatarTexto(paciente.outros_habitos)}</p>
-              </div>
-              <div>
-                <label className="text-emerald-200 text-sm font-medium">Range os dentes</label>
-                <p className="text-white">{formatarTexto(paciente.range_dentes)}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* -------- HISTÓRICO ODONTOLÓGICO -------- */}
-          <div className="glass-card rounded-2xl p-6 space-y-6">
-            <div className="flex items-center space-x-3 mb-6">
-              <SmilePlus className="w-6 h-6 text-emerald-300" />
-              <h2 className="text-xl font-semibold text-white">Histórico Odontológico</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="text-emerald-200 text-sm font-medium">Idade na primeira consulta</label>
-                <p className="text-white">{paciente.anos_primeira_consulta || "Não informado"}</p>
-              </div>
-              <div>
-                <label className="text-emerald-200 text-sm font-medium">Tratamento anterior</label>
-                <p className="text-white">{formatarTexto(paciente.tratamento_anterior)}</p>
-              </div>
-              <div>
-                <label className="text-emerald-200 text-sm font-medium">Já foi ao dentista</label>
-                <p className="text-white">{formatarSimNao(paciente.foi_dentista)}</p>
-                {paciente.qual_dentista && (
-                  <p className="text-emerald-200 text-sm mt-1">{paciente.qual_dentista}</p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* -------- ALIMENTAÇÃO E OUTRAS INFORMAÇÕES -------- */}
-          <div className="glass-card rounded-2xl p-6 space-y-6">
-            <div className="flex items-center space-x-3 mb-6">
-              <Apple className="w-6 h-6 text-emerald-300" />
-              <h2 className="text-xl font-semibold text-white">Alimentação e Outras Informações</h2>
-            </div>
-            <div className="space-y-4">
-              <div>
-                <label className="text-emerald-200 text-sm font-medium">Alimentação</label>
-                <p className="text-white">{formatarTexto(paciente.alimentacao_notas)}</p>
-              </div>
-              <div>
-                <label className="text-emerald-200 text-sm font-medium">Informações adicionais</label>
-                <p className="text-white">{formatarTexto(paciente.informacoes_adicionais)}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* -------- HIGIENE BUCAL -------- */}
+          {/* Higiene Bucal */}
           <div className="glass-card rounded-2xl p-6 space-y-6">
             <div className="flex items-center space-x-3 mb-6">
               <Smile className="w-6 h-6 text-emerald-300" />
               <h2 className="text-xl font-semibold text-white">Higiene Bucal</h2>
             </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="text-emerald-200 text-sm font-medium">Escova utilizada</label>
@@ -641,22 +449,24 @@ export default function VisualizarFicha() {
             </div>
           </div>
 
-          {/* -------- MAPA DENTAL -------- */}
+          {/* Mapa Dental */}
           {paciente.mapa_dental && paciente.mapa_dental.length > 0 && (
-            <MapaDental
-              selectedTeeth={paciente.mapa_dental}
-              onTeethChange={() => {}} // Read-only
-              readOnly={true}
-            />
+            <div>
+              <MapaDental 
+                selectedTeeth={paciente.mapa_dental}
+                onTeethChange={() => {}} // Read-only
+              />
+            </div>
           )}
 
-          {/* -------- HISTÓRICO DE CONSULTAS -------- */}
+          {/* Histórico de Consultas */}
           {consultas.length > 0 && (
             <div className="glass-card rounded-2xl p-6 space-y-6">
               <div className="flex items-center space-x-3 mb-6">
                 <Calendar className="w-6 h-6 text-emerald-300" />
                 <h2 className="text-xl font-semibold text-white">Histórico de Consultas</h2>
               </div>
+              
               <div className="space-y-3">
                 {consultas.map((consulta, index) => (
                   <div key={index} className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
@@ -672,9 +482,9 @@ export default function VisualizarFicha() {
                         <p className="text-white">{consulta.peso} kg</p>
                       </div>
                       {consulta.observacoes && (
-                        <div className="md:col-span-3">
+                        <div>
                           <label className="text-emerald-200 text-sm font-medium">Observações</label>
-                          <p className="text-white whitespace-pre-wrap">{consulta.observacoes}</p>
+                          <p className="text-white">{consulta.observacoes}</p>
                         </div>
                       )}
                     </div>
@@ -684,17 +494,19 @@ export default function VisualizarFicha() {
             </div>
           )}
 
-          {/* -------- RESPONSÁVEL -------- */}
+          {/* Responsável */}
           <div className="glass-card rounded-2xl p-6 space-y-6">
             <h2 className="text-xl font-semibold text-white mb-6">Responsável</h2>
+            
             <div>
               <label className="text-emerald-200 text-sm font-medium">Nome do Responsável</label>
               <p className="text-white">{formatarTexto(paciente.responsavel_nome)}</p>
             </div>
+            
             <div className="flex items-center space-x-2">
-              <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${
-                paciente.informacoes_verdadeiras
-                  ? 'bg-emerald-500 border-emerald-500'
+              <div className={`w-4 h-4 rounded border-2 ${
+                paciente.informacoes_verdadeiras 
+                  ? 'bg-emerald-500 border-emerald-500' 
                   : 'border-white/30'
               }`}>
                 {paciente.informacoes_verdadeiras && (
