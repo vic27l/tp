@@ -13,7 +13,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import MapaDental from "../components/MapaDental";
 
-// Função para carregar o logo do public/logo.png como base64
+// Carrega logo do public/logo.png
 async function getLogoBase64() {
   const response = await fetch("/logo.png");
   const blob = await response.blob();
@@ -115,7 +115,7 @@ export default function VisualizarFicha() {
     pdf.setTextColor(0, 0, 0);
   }
 
-  const handleExportPDF = async () => {
+  async function handleExportPDF() {
     setIsExporting(true);
     const input = document.getElementById("ficha-content");
     if (!input) {
@@ -135,47 +135,56 @@ export default function VisualizarFicha() {
         windowWidth: input.scrollWidth,
         windowHeight: input.scrollHeight,
       });
-      const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF("p", "mm", "a4");
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
-      const imgProps = pdf.getImageProperties(imgData);
-      const imgWidth = pdfWidth - 20;
-      const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+      const marginLeft = 10;
+      const marginRight = 10;
       const headerFooterHeight = 36;
       const usablePdfHeight = pdfHeight - headerFooterHeight * 2;
-      let heightLeft = imgHeight;
+
+      // px para mm
+      const imgWidthPx = canvas.width;
+      const imgHeightPx = canvas.height;
+      const imgWidthMm = pdfWidth - marginLeft - marginRight;
+      const pxPerMm = imgWidthPx / imgWidthMm;
+      const usablePxHeight = usablePdfHeight * pxPerMm;
+
+      let positionPx = 0;
       let pageNum = 1;
-      let totalPages = Math.ceil(imgHeight / usablePdfHeight);
-      let position = headerFooterHeight;
+      const totalPages = Math.ceil(imgHeightPx / usablePxHeight);
 
-      // Primeira página
-      pdf.addImage(
-        imgData,
-        "PNG",
-        10,
-        position,
-        imgWidth,
-        imgHeight
-      );
-      addHeaderAndFooter(pdf, pageNum, totalPages, paciente, logoBase64);
-      heightLeft -= usablePdfHeight;
+      while (positionPx < imgHeightPx) {
+        const pageCanvas = document.createElement("canvas");
+        pageCanvas.width = imgWidthPx;
+        pageCanvas.height = Math.min(usablePxHeight, imgHeightPx - positionPx);
+        const pageCtx = pageCanvas.getContext("2d");
+        pageCtx.drawImage(
+          canvas,
+          0,
+          positionPx,
+          imgWidthPx,
+          pageCanvas.height,
+          0,
+          0,
+          imgWidthPx,
+          pageCanvas.height
+        );
+        const imgData = pageCanvas.toDataURL("image/png");
+        if (pageNum > 1) pdf.addPage();
 
-      // Demais páginas
-      while (heightLeft > 0) {
-        pdf.addPage();
-        pageNum++;
-        position = headerFooterHeight - (imgHeight - heightLeft);
         pdf.addImage(
           imgData,
           "PNG",
-          10,
-          position,
-          imgWidth,
-          imgHeight
+          marginLeft,
+          headerFooterHeight,
+          imgWidthMm,
+          (pageCanvas.height / pxPerMm)
         );
         addHeaderAndFooter(pdf, pageNum, totalPages, paciente, logoBase64);
-        heightLeft -= usablePdfHeight;
+
+        positionPx += usablePxHeight;
+        pageNum++;
       }
 
       pdf.save(
@@ -187,7 +196,7 @@ export default function VisualizarFicha() {
       input.classList.remove("pdf-export");
       setIsExporting(false);
     }
-  };
+  }
 
   if (isLoading) {
     return (
@@ -257,9 +266,9 @@ export default function VisualizarFicha() {
           </button>
         </div>
 
+        {/* TODOS OS BLOCOS COMPLETOS ABAIXO */}
         <div className="space-y-8" id="ficha-content">
-
-          {/* Dados Pessoais */}
+          {/* -------- DADOS PESSOAIS -------- */}
           <div className="glass-card rounded-2xl p-6 space-y-6">
             <div className="flex items-center space-x-3 mb-6">
               <User className="w-6 h-6 text-emerald-300" />
@@ -305,7 +314,7 @@ export default function VisualizarFicha() {
             </div>
           </div>
 
-          {/* Dados dos Pais */}
+          {/* -------- DADOS DOS PAIS -------- */}
           <div className="glass-card rounded-2xl p-6 space-y-6">
             <h2 className="text-xl font-semibold text-white mb-6">Dados dos Pais</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -346,7 +355,7 @@ export default function VisualizarFicha() {
             </div>
           </div>
 
-          {/* Motivo da Consulta */}
+          {/* -------- MOTIVO DA CONSULTA -------- */}
           <div className="glass-card rounded-2xl p-6 space-y-6">
             <div className="flex items-center space-x-3 mb-6">
               <FileText className="w-6 h-6 text-emerald-300" />
@@ -364,7 +373,7 @@ export default function VisualizarFicha() {
             </div>
           </div>
 
-          {/* Necessidades Especiais */}
+          {/* -------- NECESSIDADES ESPECIAIS -------- */}
           <div className="glass-card rounded-2xl p-6 space-y-6">
             <div className="flex items-center space-x-3 mb-6">
               <Heart className="w-6 h-6 text-emerald-300" />
@@ -412,7 +421,7 @@ export default function VisualizarFicha() {
             </div>
           </div>
 
-          {/* Histórico Médico */}
+          {/* -------- HISTÓRICO MÉDICO -------- */}
           <div className="glass-card rounded-2xl p-6 space-y-6">
             <div className="flex items-center space-x-3 mb-6">
               <Stethoscope className="w-6 h-6 text-emerald-300" />
@@ -467,7 +476,7 @@ export default function VisualizarFicha() {
             </div>
           </div>
 
-          {/* Acompanhamentos e Hábitos */}
+          {/* -------- ACOMPANHAMENTOS E HÁBITOS -------- */}
           <div className="glass-card rounded-2xl p-6 space-y-6">
             <div className="flex items-center space-x-3 mb-6">
               <Activity className="w-6 h-6 text-emerald-300" />
@@ -505,7 +514,7 @@ export default function VisualizarFicha() {
             </div>
           </div>
 
-          {/* Hábitos Alimentares e Comportamentais */}
+          {/* -------- HÁBITOS ALIMENTARES E COMPORTAMENTAIS -------- */}
           <div className="glass-card rounded-2xl p-6 space-y-6">
             <div className="flex items-center space-x-3 mb-6">
               <Baby className="w-6 h-6 text-emerald-300" />
@@ -557,7 +566,7 @@ export default function VisualizarFicha() {
             </div>
           </div>
 
-          {/* Histórico Odontológico */}
+          {/* -------- HISTÓRICO ODONTOLÓGICO -------- */}
           <div className="glass-card rounded-2xl p-6 space-y-6">
             <div className="flex items-center space-x-3 mb-6">
               <SmilePlus className="w-6 h-6 text-emerald-300" />
@@ -582,7 +591,7 @@ export default function VisualizarFicha() {
             </div>
           </div>
 
-          {/* Alimentação e Outras Informações */}
+          {/* -------- ALIMENTAÇÃO E OUTRAS INFORMAÇÕES -------- */}
           <div className="glass-card rounded-2xl p-6 space-y-6">
             <div className="flex items-center space-x-3 mb-6">
               <Apple className="w-6 h-6 text-emerald-300" />
@@ -600,7 +609,7 @@ export default function VisualizarFicha() {
             </div>
           </div>
 
-          {/* Higiene Bucal */}
+          {/* -------- HIGIENE BUCAL -------- */}
           <div className="glass-card rounded-2xl p-6 space-y-6">
             <div className="flex items-center space-x-3 mb-6">
               <Smile className="w-6 h-6 text-emerald-300" />
@@ -646,7 +655,7 @@ export default function VisualizarFicha() {
             </div>
           </div>
 
-          {/* Mapa Dental */}
+          {/* -------- MAPA DENTAL -------- */}
           {paciente.mapa_dental && paciente.mapa_dental.length > 0 && (
             <div>
               <MapaDental
@@ -656,7 +665,7 @@ export default function VisualizarFicha() {
             </div>
           )}
 
-          {/* Histórico de Consultas */}
+          {/* -------- HISTÓRICO DE CONSULTAS -------- */}
           {consultas.length > 0 && (
             <div className="glass-card rounded-2xl p-6 space-y-6">
               <div className="flex items-center space-x-3 mb-6">
@@ -690,7 +699,7 @@ export default function VisualizarFicha() {
             </div>
           )}
 
-          {/* Responsável */}
+          {/* -------- RESPONSÁVEL -------- */}
           <div className="glass-card rounded-2xl p-6 space-y-6">
             <h2 className="text-xl font-semibold text-white mb-6">Responsável</h2>
             <div>
@@ -714,13 +723,14 @@ export default function VisualizarFicha() {
               </span>
             </div>
           </div>
+
         </div>
       </div>
     </div>
   );
 }
 
-// CSS PARA O PDF (adicione ao global.css):
+// CSS PARA O PDF (adicione ao seu global.css)
 /*
 .pdf-export,
 .pdf-export * {
