@@ -61,6 +61,7 @@ export default function VisualizarFicha() {
   
     // Add PDF export class
     input.classList.add('pdf-export');
+    input.style.display = 'block';
   
     // Wait for styles to apply
     setTimeout(() => {
@@ -81,19 +82,33 @@ export default function VisualizarFicha() {
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
-        const imgProps = pdf.getImageProperties(imgData);
-        const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        
+        // Calculate image dimensions
+        const canvasWidth = canvas.width;
+        const canvasHeight = canvas.height;
+        const ratio = canvasWidth / canvasHeight;
+        
+        let imgWidth = pdfWidth;
+        let imgHeight = pdfWidth / ratio;
+        
+        // If image is taller than page, scale it down
+        if (imgHeight > pdfHeight) {
+          imgHeight = pdfHeight;
+          imgWidth = pdfHeight * ratio;
+        }
         
         let heightLeft = imgHeight;
         let position = 0;
   
-        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
+        // Add first page
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
         heightLeft -= pdfHeight;
   
+        // Add additional pages if needed
         while (heightLeft > 0) {
-          position = heightLeft - pdfHeight;
+          position = heightLeft - imgHeight;
           pdf.addPage();
-          pdf.addImage(imgData, 'PNG', 0, -position, pdfWidth, imgHeight);
+          pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
           heightLeft -= pdfHeight;
         }
         
@@ -101,12 +116,14 @@ export default function VisualizarFicha() {
         
       }).catch(err => {
         console.error("Error exporting PDF:", err);
+        alert("Erro ao exportar PDF. Tente novamente.");
       }).finally(() => {
-        // Remove PDF export class
+        // Remove PDF export class and hide
         input.classList.remove('pdf-export');
+        input.style.display = 'none';
         setIsExporting(false);
       });
-    }, 100);
+    }, 500);
   };
 
   const formatarSimNao = (valor) => {
@@ -128,12 +145,11 @@ export default function VisualizarFicha() {
           <div className="pdf-export-title">FICHA DE</div>
           <div className="pdf-export-subtitle">ANAMNESE</div>
         </div>
-        <img 
-          src="/logo.png" 
-          alt="Dr. Paulo" 
-          className="pdf-export-doctor"
-          onError={(e) => {e.target.style.display = 'none'}}
-        />
+        <div className="pdf-export-doctor-placeholder">
+          <div className="pdf-export-doctor-circle">
+            <span>FOTO</span>
+          </div>
+        </div>
       </div>
 
       {/* Formulário */}
@@ -258,7 +274,6 @@ export default function VisualizarFicha() {
             <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.necessidade_especial) === "NÃO" ? "X" : ""}</span>
             <span className="pdf-export-checkbox-label">NÃO</span>
           </div>
-          <div className="pdf-export-field-value">{paciente.qual_necessidade || ""}</div>
         </div>
 
         <div className="pdf-export-field">
@@ -298,6 +313,55 @@ export default function VisualizarFicha() {
         <div className="pdf-export-field">
           <label>QUAL:</label>
           <div className="pdf-export-field-value">{paciente.qual_visual || ""}</div>
+        </div>
+
+        <div className="pdf-export-field">
+          <label>POSSUI COMPROMETIMENTO DE COMUNICAÇÃO MOTORA:</label>
+          <div className="pdf-export-checkbox">
+            <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.comprometimento_comunicacao) === "SIM" ? "X" : ""}</span>
+            <span className="pdf-export-checkbox-label">SIM</span>
+          </div>
+          <div className="pdf-export-checkbox">
+            <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.comprometimento_comunicacao) === "NÃO" ? "X" : ""}</span>
+            <span className="pdf-export-checkbox-label">NÃO</span>
+          </div>
+        </div>
+
+        <div className="pdf-export-field">
+          <label>QUAL:</label>
+          <div className="pdf-export-field-value">{paciente.qual_comunicacao || ""}</div>
+        </div>
+
+        {/* Histórico Médico */}
+        <h2>HISTÓRICO MÉDICO</h2>
+
+        <div className="pdf-export-field">
+          <label>SOFREU CIRURGIA:</label>
+          <div className="pdf-export-checkbox">
+            <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.sofreu_cirurgia) === "SIM" ? "X" : ""}</span>
+            <span className="pdf-export-checkbox-label">SIM</span>
+          </div>
+          <div className="pdf-export-checkbox">
+            <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.sofreu_cirurgia) === "NÃO" ? "X" : ""}</span>
+            <span className="pdf-export-checkbox-label">NÃO</span>
+          </div>
+        </div>
+
+        <div className="pdf-export-field">
+          <label>QUAL:</label>
+          <div className="pdf-export-field-value">{paciente.qual_cirurgia || ""}</div>
+        </div>
+
+        <div className="pdf-export-field">
+          <label>ALTERAÇÕES SANGUÍNEAS:</label>
+          <div className="pdf-export-checkbox">
+            <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.alteracoes_sanguineas) === "SIM" ? "X" : ""}</span>
+            <span className="pdf-export-checkbox-label">SIM</span>
+          </div>
+          <div className="pdf-export-checkbox">
+            <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.alteracoes_sanguineas) === "NÃO" ? "X" : ""}</span>
+            <span className="pdf-export-checkbox-label">NÃO</span>
+          </div>
         </div>
 
         {/* Assinatura */}
