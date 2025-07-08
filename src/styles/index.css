@@ -45,6 +45,9 @@
   min-height: auto !important;
   width: 100% !important;
   box-sizing: border-box !important;
+  overflow: visible !important;
+  position: relative !important;
+  transform: none !important;
 }
 
 .pdf-export .glass-card {
@@ -56,12 +59,15 @@
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  page-break-inside: avoid !important;
+  break-inside: avoid !important;
 }
 
 .pdf-export h1, .pdf-export h2, .pdf-export h3 {
   color: #059669 !important;
   margin-bottom: 1rem !important;
   font-weight: 600 !important;
+  page-break-after: avoid !important;
 }
 
 .pdf-export label {
@@ -76,6 +82,51 @@
   color: #1a202c !important;
   margin-bottom: 0.5rem !important;
   line-height: 1.5 !important;
+}
+
+.pdf-export .grid {
+  display: grid !important;
+  gap: 1rem !important;
+}
+
+.pdf-export .grid-cols-1 {
+  grid-template-columns: 1fr !important;
+}
+
+.pdf-export .grid-cols-2 {
+  grid-template-columns: repeat(2, 1fr) !important;
+}
+
+.pdf-export .grid-cols-3 {
+  grid-template-columns: repeat(3, 1fr) !important;
+}
+
+.pdf-export .space-y-4 > * + * {
+  margin-top: 1rem !important;
+}
+
+.pdf-export .space-y-6 > * + * {
+  margin-top: 1.5rem !important;
+}
+
+.pdf-export .space-y-8 > * + * {
+  margin-top: 2rem !important;
+}
+
+.pdf-export .flex {
+  display: flex !important;
+}
+
+.pdf-export .items-center {
+  align-items: center !important;
+}
+
+.pdf-export .space-x-2 > * + * {
+  margin-left: 0.5rem !important;
+}
+
+.pdf-export .space-x-3 > * + * {
+  margin-left: 0.75rem !important;
 }
 
 .pdf-export .bg-white\/10,
@@ -120,6 +171,48 @@
 .pdf-export .w-4,
 .pdf-export .h-4 {
   color: #059669 !important;
+}
+
+.pdf-export .rounded-xl,
+.pdf-export .rounded-2xl,
+.pdf-export .rounded-lg {
+  border-radius: 0.5rem !important;
+}
+
+.pdf-export .mb-2 {
+  margin-bottom: 0.5rem !important;
+}
+
+.pdf-export .mb-4 {
+  margin-bottom: 1rem !important;
+}
+
+.pdf-export .mb-6 {
+  margin-bottom: 1.5rem !important;
+}
+
+.pdf-export .mt-1 {
+  margin-top: 0.25rem !important;
+}
+
+.pdf-export .text-sm {
+  font-size: 0.875rem !important;
+}
+
+.pdf-export .text-lg {
+  font-size: 1.125rem !important;
+}
+
+.pdf-export .text-xl {
+  font-size: 1.25rem !important;
+}
+
+.pdf-export .font-medium {
+  font-weight: 500 !important;
+}
+
+.pdf-export .font-semibold {
+  font-weight: 600 !important;
 }
 
 .floating-particles {
