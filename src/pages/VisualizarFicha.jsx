@@ -50,62 +50,192 @@ export default function VisualizarFicha() {
     }
   };
 
-  const handleExportPDF = () => {
+  const handleExportPDF = async () => {
     setIsExporting(true);
     const input = document.getElementById('ficha-content');
+    
     if (!input) {
       setIsExporting(false);
       return;
     }
-  
-    // Add PDF export class
-    input.classList.add('pdf-export');
-  
-    // Wait for styles to apply
-    setTimeout(() => {
-      html2canvas(input, {
-        scale: 1.5, // Balanced scale for quality and performance
+
+    try {
+      // Adicionar classe para estilos específicos do PDF
+      input.classList.add('pdf-export');
+      
+      // Aguardar um pouco para os estilos serem aplicados
+      await new Promise(resolve => setTimeout(resolve, 200));
+
+      // Configurações otimizadas para o html2canvas
+      const canvas = await html2canvas(input, {
+        scale: 2, // Maior qualidade
         useCORS: true,
-        logging: false, // Disable logging for cleaner console
-        allowTaint: true, // Allow tainting the canvas from cross-origin images (if any)
-        backgroundColor: '#ffffff', // White background
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+        logging: false,
         width: input.scrollWidth,
         height: input.scrollHeight,
-        scrollX: 0,
-        scrollY: 0,
-        windowWidth: input.scrollWidth,
-        windowHeight: input.scrollHeight
-      }).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
-        const imgProps = pdf.getImageProperties(imgData);
-        const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
-        
-        let heightLeft = imgHeight;
-        let position = 0;
-  
-        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
-        heightLeft -= pdfHeight;
-  
-        while (heightLeft > 0) {
-          position = heightLeft - pdfHeight;
-          pdf.addPage();
-          pdf.addImage(imgData, 'PNG', 0, -position, pdfWidth, imgHeight);
-          heightLeft -= pdfHeight;
+        windowWidth: 1200, // Largura fixa para consistência
+        windowHeight: input.scrollHeight,
+        onclone: (clonedDoc) => {
+          // Aplicar estilos específicos no documento clonado
+          const clonedElement = clonedDoc.getElementById('ficha-content');
+          if (clonedElement) {
+            clonedElement.style.width = '1200px';
+            clonedElement.style.padding = '40px';
+            clonedElement.style.fontSize = '14px';
+            clonedElement.style.lineHeight = '1.6';
+            
+            // Ajustar cards para melhor formatação
+            const cards = clonedElement.querySelectorAll('.glass-card');
+            cards.forEach(card => {
+              card.style.backgroundColor = '#f8f9fa';
+              card.style.border = '1px solid #e9ecef';
+              card.style.borderRadius = '8px';
+              card.style.padding = '24px';
+              card.style.marginBottom = '24px';
+              card.style.pageBreakInside = 'avoid';
+            });
+
+            // Ajustar textos
+            const labels = clonedElement.querySelectorAll('label');
+            labels.forEach(label => {
+              label.style.color = '#495057';
+              label.style.fontWeight = '600';
+              label.style.fontSize = '12px';
+              label.style.marginBottom = '4px';
+              label.style.display = 'block';
+            });
+
+            const texts = clonedElement.querySelectorAll('p');
+            texts.forEach(text => {
+              text.style.color = '#212529';
+              text.style.fontSize = '14px';
+              text.style.lineHeight = '1.5';
+              text.style.marginBottom = '8px';
+            });
+
+            // Ajustar títulos
+            const headings = clonedElement.querySelectorAll('h2, h3');
+            headings.forEach(heading => {
+              heading.style.color = '#198754';
+              heading.style.fontSize = heading.tagName === 'H2' ? '18px' : '16px';
+              heading.style.fontWeight = '700';
+              heading.style.marginBottom = '16px';
+              heading.style.borderBottom = '2px solid #198754';
+              heading.style.paddingBottom = '8px';
+            });
+
+            // Ajustar grids
+            const grids = clonedElement.querySelectorAll('.grid');
+            grids.forEach(grid => {
+              grid.style.display = 'grid';
+              grid.style.gap = '16px';
+              grid.style.marginBottom = '16px';
+            });
+
+            // Ajustar ícones (remover ou simplificar)
+            const icons = clonedElement.querySelectorAll('svg');
+            icons.forEach(icon => {
+              icon.style.display = 'none';
+            });
+          }
         }
-        
-        pdf.save(`ficha_${paciente.nome_crianca.replace(/\s+/g, '_')}.pdf`);
-        
-      }).catch(err => {
-        console.error("Error exporting PDF:", err);
-      }).finally(() => {
-        // Remove PDF export class
-        input.classList.remove('pdf-export');
-        setIsExporting(false);
       });
-    }, 100);
+
+      // Criar PDF com configurações otimizadas
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+        compress: true
+      });
+
+      const imgData = canvas.toDataURL('image/png', 0.8);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const margin = 10;
+      const contentWidth = pdfWidth - (margin * 2);
+      
+      // Calcular dimensões da imagem
+      const imgProps = pdf.getImageProperties(imgData);
+      const imgRatio = imgProps.height / imgProps.width;
+      const contentHeight = contentWidth * imgRatio;
+      
+      let yPosition = margin;
+      let remainingHeight = contentHeight;
+
+      // Adicionar cabeçalho na primeira página
+      pdf.setFontSize(20);
+      pdf.setTextColor(25, 135, 84);
+      pdf.text(`Ficha de Anamnese - ${paciente.nome_crianca}`, margin, yPosition);
+      yPosition += 15;
+      
+      pdf.setFontSize(12);
+      pdf.setTextColor(108, 117, 125);
+      pdf.text(`Gerado em: ${format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}`, margin, yPosition);
+      yPosition += 10;
+
+      // Calcular altura disponível para o conteúdo
+      const availableHeight = pdfHeight - yPosition - margin;
+      
+      // Adicionar imagem
+      if (remainingHeight <= availableHeight) {
+        // Se cabe em uma página
+        pdf.addImage(imgData, 'PNG', margin, yPosition, contentWidth, contentHeight);
+      } else {
+        // Se precisa de múltiplas páginas
+        let currentY = yPosition;
+        let sourceY = 0;
+        
+        while (remainingHeight > 0) {
+          const pageHeight = Math.min(remainingHeight, availableHeight);
+          const sourceHeight = (pageHeight / contentHeight) * imgProps.height;
+          
+          pdf.addImage(
+            imgData, 
+            'PNG', 
+            margin, 
+            currentY, 
+            contentWidth, 
+            pageHeight,
+            '', 
+            'FAST',
+            0,
+            sourceY
+          );
+          
+          remainingHeight -= pageHeight;
+          sourceY += sourceHeight;
+          
+          if (remainingHeight > 0) {
+            pdf.addPage();
+            currentY = margin;
+            
+            // Adicionar cabeçalho nas páginas subsequentes
+            pdf.setFontSize(12);
+            pdf.setTextColor(25, 135, 84);
+            pdf.text(`${paciente.nome_crianca} - Continuação`, margin, currentY);
+            currentY += 10;
+            
+            // Recalcular altura disponível
+            availableHeight = pdfHeight - currentY - margin;
+          }
+        }
+      }
+
+      // Salvar PDF
+      const fileName = `ficha_anamnese_${paciente.nome_crianca.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
+      pdf.save(fileName);
+      
+    } catch (error) {
+      console.error("Erro ao exportar PDF:", error);
+      alert("Erro ao exportar PDF. Tente novamente.");
+    } finally {
+      // Remover classe de PDF
+      input.classList.remove('pdf-export');
+      setIsExporting(false);
+    }
   };
 
   if (isLoading) {
@@ -177,6 +307,87 @@ export default function VisualizarFicha() {
             <span>{isExporting ? "Exportando..." : "Exportar PDF"}</span>
           </button>
         </div>
+
+        {/* Estilos específicos para PDF */}
+        <style jsx>{`
+          .pdf-export {
+            background: white !important;
+            color: black !important;
+            font-family: Arial, sans-serif !important;
+            width: 1200px !important;
+            max-width: none !important;
+            margin: 0 !important;
+            padding: 40px !important;
+            box-shadow: none !important;
+          }
+          
+          .pdf-export * {
+            background: transparent !important;
+            color: inherit !important;
+            text-shadow: none !important;
+            box-shadow: none !important;
+          }
+          
+          .pdf-export .glass-card {
+            background: #f8f9fa !important;
+            border: 1px solid #e9ecef !important;
+            border-radius: 8px !important;
+            padding: 24px !important;
+            margin-bottom: 24px !important;
+            page-break-inside: avoid !important;
+          }
+          
+          .pdf-export h1 {
+            color: #198754 !important;
+            font-size: 24px !important;
+            margin-bottom: 8px !important;
+          }
+          
+          .pdf-export h2 {
+            color: #198754 !important;
+            font-size: 18px !important;
+            font-weight: 700 !important;
+            margin-bottom: 16px !important;
+            border-bottom: 2px solid #198754 !important;
+            padding-bottom: 8px !important;
+          }
+          
+          .pdf-export h3 {
+            color: #198754 !important;
+            font-size: 16px !important;
+            font-weight: 600 !important;
+            margin-bottom: 12px !important;
+          }
+          
+          .pdf-export label {
+            color: #495057 !important;
+            font-weight: 600 !important;
+            font-size: 12px !important;
+            margin-bottom: 4px !important;
+            display: block !important;
+          }
+          
+          .pdf-export p {
+            color: #212529 !important;
+            font-size: 14px !important;
+            line-height: 1.5 !important;
+            margin-bottom: 8px !important;
+          }
+          
+          .pdf-export .grid {
+            display: grid !important;
+            gap: 16px !important;
+            margin-bottom: 16px !important;
+          }
+          
+          .pdf-export svg {
+            display: none !important;
+          }
+          
+          .pdf-export .glass-button {
+            display: none !important;
+          }
+        `}</style>
 
         <div className="space-y-8" id="ficha-content">
           {/* Dados Pessoais */}
