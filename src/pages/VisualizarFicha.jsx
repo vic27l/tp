@@ -9,6 +9,7 @@ import { ArrowLeft, FileText, User, Heart, Stethoscope, Smile, Activity, Baby, S
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import MapaDental from "../components/MapaDental";
+import "../styles/pdf-export.css";
 
 export default function VisualizarFicha() {
   const navigate = useNavigate();
@@ -64,11 +65,11 @@ export default function VisualizarFicha() {
     // Wait for styles to apply
     setTimeout(() => {
       html2canvas(input, {
-        scale: 1.5, // Balanced scale for quality and performance
+        scale: 2,
         useCORS: true,
-        logging: false, // Disable logging for cleaner console
-        allowTaint: true, // Allow tainting the canvas from cross-origin images (if any)
-        backgroundColor: '#ffffff', // White background
+        logging: false,
+        allowTaint: true,
+        backgroundColor: '#1e5128',
         width: input.scrollWidth,
         height: input.scrollHeight,
         scrollX: 0,
@@ -96,7 +97,7 @@ export default function VisualizarFicha() {
           heightLeft -= pdfHeight;
         }
         
-        pdf.save(`ficha_${paciente.nome_crianca.replace(/\s+/g, '_')}.pdf`);
+        pdf.save(`ficha_anamnese_${paciente.nome_crianca.replace(/\s+/g, '_')}.pdf`);
         
       }).catch(err => {
         console.error("Error exporting PDF:", err);
@@ -107,6 +108,211 @@ export default function VisualizarFicha() {
       });
     }, 100);
   };
+
+  const formatarSimNao = (valor) => {
+    if (valor === true) return "SIM";
+    if (valor === false) return "NÃO";
+    return "";
+  };
+
+  const formatarTexto = (texto) => {
+    return texto || "";
+  };
+
+  const renderPDFContent = () => (
+    <div className="pdf-export-content">
+      {/* Header */}
+      <div className="pdf-export-header">
+        <div>
+          <div className="pdf-export-logo">Tio Paulo</div>
+          <div className="pdf-export-title">FICHA DE</div>
+          <div className="pdf-export-subtitle">ANAMNESE</div>
+        </div>
+        <img 
+          src="/logo.png" 
+          alt="Dr. Paulo" 
+          className="pdf-export-doctor"
+          onError={(e) => {e.target.style.display = 'none'}}
+        />
+      </div>
+
+      {/* Formulário */}
+      <div className="pdf-export-form">
+        {/* Dados Pessoais */}
+        <div className="pdf-export-row">
+          <div className="pdf-export-col">
+            <div className="pdf-export-field">
+              <label>NOME DA CRIANÇA:</label>
+              <div className="pdf-export-field-value">{paciente.nome_crianca}</div>
+            </div>
+          </div>
+          <div className="pdf-export-col">
+            <div className="pdf-export-field">
+              <label>IDADE:</label>
+              <div className="pdf-export-field-value">{paciente.idade || ""}</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="pdf-export-row">
+          <div className="pdf-export-col">
+            <div className="pdf-export-field">
+              <label>DATA DE NASCIMENTO:</label>
+              <div className="pdf-export-field-value">
+                {paciente.data_nascimento 
+                  ? format(new Date(paciente.data_nascimento), "dd/MM/yyyy", { locale: ptBR })
+                  : ""
+                }
+              </div>
+            </div>
+          </div>
+          <div className="pdf-export-col">
+            <div className="pdf-export-field">
+              <label>CIDADE:</label>
+              <div className="pdf-export-field-value">{paciente.cidade || ""}</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="pdf-export-row">
+          <div className="pdf-export-col">
+            <div className="pdf-export-field">
+              <label>ENDEREÇO:</label>
+              <div className="pdf-export-field-value">{paciente.endereco || ""}</div>
+            </div>
+          </div>
+          <div className="pdf-export-col">
+            <div className="pdf-export-field">
+              <label>CEP:</label>
+              <div className="pdf-export-field-value">{paciente.cep || ""}</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="pdf-export-row">
+          <div className="pdf-export-col">
+            <div className="pdf-export-field">
+              <label>BAIRRO:</label>
+              <div className="pdf-export-field-value">{paciente.bairro || ""}</div>
+            </div>
+          </div>
+          <div className="pdf-export-col">
+            <div className="pdf-export-field">
+              <label>CEL:</label>
+              <div className="pdf-export-field-value">{paciente.cel || ""}</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Dados dos Pais */}
+        <h2>DADOS DOS PAIS</h2>
+        
+        <div className="pdf-export-row">
+          <div className="pdf-export-col">
+            <div className="pdf-export-field">
+              <label>NOME DA MÃE:</label>
+              <div className="pdf-export-field-value">{paciente.nome_mae || ""}</div>
+            </div>
+          </div>
+          <div className="pdf-export-col">
+            <div className="pdf-export-field">
+              <label>PROFISSÃO:</label>
+              <div className="pdf-export-field-value">{paciente.profissao_mae || ""}</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="pdf-export-row">
+          <div className="pdf-export-col">
+            <div className="pdf-export-field">
+              <label>NOME DO PAI:</label>
+              <div className="pdf-export-field-value">{paciente.nome_pai || ""}</div>
+            </div>
+          </div>
+          <div className="pdf-export-col">
+            <div className="pdf-export-field">
+              <label>PROFISSÃO:</label>
+              <div className="pdf-export-field-value">{paciente.profissao_pai || ""}</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="pdf-export-field">
+          <label>QUAL O MOTIVO DA CONSULTA:</label>
+          <div className="pdf-export-field-value">{paciente.motivo_consulta || ""}</div>
+        </div>
+
+        <div className="pdf-export-field">
+          <label>HOUVE ALGUMA ALTERAÇÃO DURANTE A GESTAÇÃO:</label>
+          <div className="pdf-export-field-value">{paciente.alteracao_gestacao || ""}</div>
+        </div>
+
+        {/* Necessidades Especiais */}
+        <div className="pdf-export-field">
+          <label>POSSUI NECESSIDADE ESPECIAL:</label>
+          <div className="pdf-export-checkbox">
+            <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.necessidade_especial) === "SIM" ? "X" : ""}</span>
+            <span className="pdf-export-checkbox-label">SIM</span>
+          </div>
+          <div className="pdf-export-checkbox">
+            <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.necessidade_especial) === "NÃO" ? "X" : ""}</span>
+            <span className="pdf-export-checkbox-label">NÃO</span>
+          </div>
+          <div className="pdf-export-field-value">{paciente.qual_necessidade || ""}</div>
+        </div>
+
+        <div className="pdf-export-field">
+          <label>QUAL:</label>
+          <div className="pdf-export-field-value">{paciente.qual_necessidade || ""}</div>
+        </div>
+
+        <div className="pdf-export-field">
+          <label>POSSUI COMPROMETIMENTO DE COORDENAÇÃO MOTORA:</label>
+          <div className="pdf-export-checkbox">
+            <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.comprometimento_coordenacao) === "SIM" ? "X" : ""}</span>
+            <span className="pdf-export-checkbox-label">SIM</span>
+          </div>
+          <div className="pdf-export-checkbox">
+            <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.comprometimento_coordenacao) === "NÃO" ? "X" : ""}</span>
+            <span className="pdf-export-checkbox-label">NÃO</span>
+          </div>
+        </div>
+
+        <div className="pdf-export-field">
+          <label>QUAL:</label>
+          <div className="pdf-export-field-value">{paciente.qual_coordenacao || ""}</div>
+        </div>
+
+        <div className="pdf-export-field">
+          <label>POSSUI COMPROMETIMENTO VISUAL:</label>
+          <div className="pdf-export-checkbox">
+            <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.comprometimento_visual) === "SIM" ? "X" : ""}</span>
+            <span className="pdf-export-checkbox-label">SIM</span>
+          </div>
+          <div className="pdf-export-checkbox">
+            <span className="pdf-export-checkbox-box">{formatarSimNao(paciente.comprometimento_visual) === "NÃO" ? "X" : ""}</span>
+            <span className="pdf-export-checkbox-label">NÃO</span>
+          </div>
+        </div>
+
+        <div className="pdf-export-field">
+          <label>QUAL:</label>
+          <div className="pdf-export-field-value">{paciente.qual_visual || ""}</div>
+        </div>
+
+        {/* Assinatura */}
+        <div className="pdf-export-signature">
+          <div className="pdf-export-signature-line"></div>
+          <div className="pdf-export-signature-text">ASSINATURA DO RESPONSÁVEL</div>
+        </div>
+
+        {/* Rodapé */}
+        <div className="pdf-export-footer">
+          <p>Ficha de Anamnese - Tio Paulo Odontologia</p>
+        </div>
+      </div>
+    </div>
+  );
 
   if (isLoading) {
     return (
@@ -137,13 +343,7 @@ export default function VisualizarFicha() {
     );
   }
 
-  const formatarSimNao = (valor) => {
-    if (valor === true) return "SIM";
-    if (valor === false) return "NÃO";
-    return "Não informado";
-  };
-
-  const formatarTexto = (texto) => {
+  const formatarTextoDisplay = (texto) => {
     return texto || "Não informado";
   };
 
@@ -178,7 +378,13 @@ export default function VisualizarFicha() {
           </button>
         </div>
 
-        <div className="space-y-8" id="ficha-content">
+        {/* Conteúdo para PDF (oculto na tela) */}
+        <div id="ficha-content" style={{ display: 'none' }}>
+          {renderPDFContent()}
+        </div>
+
+        {/* Conteúdo para visualização na tela */}
+        <div className="space-y-8">
           {/* Dados Pessoais */}
           <div className="glass-card rounded-2xl p-6 space-y-6">
             <div className="flex items-center space-x-3 mb-6">
@@ -236,7 +442,7 @@ export default function VisualizarFicha() {
                 <h3 className="text-lg font-medium text-emerald-300">Mãe</h3>
                 <div>
                   <label className="text-emerald-200 text-sm font-medium">Nome</label>
-                  <p className="text-white">{formatarTexto(paciente.nome_mae)}</p>
+                  <p className="text-white">{formatarTextoDisplay(paciente.nome_mae)}</p>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -245,7 +451,7 @@ export default function VisualizarFicha() {
                   </div>
                   <div>
                     <label className="text-emerald-200 text-sm font-medium">Profissão</label>
-                    <p className="text-white">{formatarTexto(paciente.profissao_mae)}</p>
+                    <p className="text-white">{formatarTextoDisplay(paciente.profissao_mae)}</p>
                   </div>
                 </div>
               </div>
@@ -254,7 +460,7 @@ export default function VisualizarFicha() {
                 <h3 className="text-lg font-medium text-emerald-300">Pai</h3>
                 <div>
                   <label className="text-emerald-200 text-sm font-medium">Nome</label>
-                  <p className="text-white">{formatarTexto(paciente.nome_pai)}</p>
+                  <p className="text-white">{formatarTextoDisplay(paciente.nome_pai)}</p>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -263,7 +469,7 @@ export default function VisualizarFicha() {
                   </div>
                   <div>
                     <label className="text-emerald-200 text-sm font-medium">Profissão</label>
-                    <p className="text-white">{formatarTexto(paciente.profissao_pai)}</p>
+                    <p className="text-white">{formatarTextoDisplay(paciente.profissao_pai)}</p>
                   </div>
                 </div>
               </div>
@@ -280,11 +486,11 @@ export default function VisualizarFicha() {
             <div className="space-y-4">
               <div>
                 <label className="text-emerald-200 text-sm font-medium">Motivo da consulta</label>
-                <p className="text-white">{formatarTexto(paciente.motivo_consulta)}</p>
+                <p className="text-white">{formatarTextoDisplay(paciente.motivo_consulta)}</p>
               </div>
               <div>
                 <label className="text-emerald-200 text-sm font-medium">Alterações durante a gestação</label>
-                <p className="text-white">{formatarTexto(paciente.alteracao_gestacao)}</p>
+                <p className="text-white">{formatarTextoDisplay(paciente.alteracao_gestacao)}</p>
               </div>
             </div>
           </div>
@@ -330,11 +536,11 @@ export default function VisualizarFicha() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="text-emerald-200 text-sm font-medium">Como reage quando contrariado</label>
-                <p className="text-white">{formatarTexto(paciente.reacao_contrariado)}</p>
+                <p className="text-white">{formatarTextoDisplay(paciente.reacao_contrariado)}</p>
               </div>
               <div>
                 <label className="text-emerald-200 text-sm font-medium">Como reage com profissionais</label>
-                <p className="text-white">{formatarTexto(paciente.reacao_profissionais)}</p>
+                <p className="text-white">{formatarTextoDisplay(paciente.reacao_profissionais)}</p>
               </div>
             </div>
           </div>
@@ -379,21 +585,21 @@ export default function VisualizarFicha() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <label className="text-emerald-200 text-sm font-medium">Alergias medicamentos</label>
-                <p className="text-white">{formatarTexto(paciente.alergias_medicamento)}</p>
+                <p className="text-white">{formatarTextoDisplay(paciente.alergias_medicamento)}</p>
               </div>
               <div>
                 <label className="text-emerald-200 text-sm font-medium">Alergias alimentares</label>
-                <p className="text-white">{formatarTexto(paciente.alergias_alimentar)}</p>
+                <p className="text-white">{formatarTextoDisplay(paciente.alergias_alimentar)}</p>
               </div>
               <div>
                 <label className="text-emerald-200 text-sm font-medium">Alergias respiratórias</label>
-                <p className="text-white">{formatarTexto(paciente.alergias_respiratoria)}</p>
+                <p className="text-white">{formatarTextoDisplay(paciente.alergias_respiratoria)}</p>
               </div>
             </div>
             
             <div>
               <label className="text-emerald-200 text-sm font-medium">Tratamentos atuais</label>
-              <p className="text-white">{formatarTexto(paciente.tratamentos_atuais)}</p>
+              <p className="text-white">{formatarTextoDisplay(paciente.tratamentos_atuais)}</p>
             </div>
           </div>
 
@@ -427,13 +633,13 @@ export default function VisualizarFicha() {
               </div>
               <div>
                 <label className="text-emerald-200 text-sm font-medium">Outro tratamento</label>
-                <p className="text-white">{formatarTexto(paciente.outro_tratamento)}</p>
+                <p className="text-white">{formatarTextoDisplay(paciente.outro_tratamento)}</p>
               </div>
             </div>
             
             <div>
               <label className="text-emerald-200 text-sm font-medium">Portador de IST</label>
-              <p className="text-white">{formatarTexto(paciente.portador_ist)}</p>
+              <p className="text-white">{formatarTextoDisplay(paciente.portador_ist)}</p>
             </div>
           </div>
 
@@ -469,23 +675,23 @@ export default function VisualizarFicha() {
               </div>
               <div>
                 <label className="text-emerald-200 text-sm font-medium">Engasga ou vomita</label>
-                <p className="text-white">{formatarTexto(paciente.engasga_vomita)}</p>
+                <p className="text-white">{formatarTextoDisplay(paciente.engasga_vomita)}</p>
               </div>
               <div>
                 <label className="text-emerald-200 text-sm font-medium">Chupa o dedo</label>
-                <p className="text-white">{formatarTexto(paciente.chupa_dedo)}</p>
+                <p className="text-white">{formatarTextoDisplay(paciente.chupa_dedo)}</p>
               </div>
               <div>
                 <label className="text-emerald-200 text-sm font-medium">Chupa chupeta</label>
-                <p className="text-white">{formatarTexto(paciente.chupa_chupeta)}</p>
+                <p className="text-white">{formatarTextoDisplay(paciente.chupa_chupeta)}</p>
               </div>
               <div>
                 <label className="text-emerald-200 text-sm font-medium">Outros hábitos</label>
-                <p className="text-white">{formatarTexto(paciente.outros_habitos)}</p>
+                <p className="text-white">{formatarTextoDisplay(paciente.outros_habitos)}</p>
               </div>
               <div>
                 <label className="text-emerald-200 text-sm font-medium">Range os dentes</label>
-                <p className="text-white">{formatarTexto(paciente.range_dentes)}</p>
+                <p className="text-white">{formatarTextoDisplay(paciente.range_dentes)}</p>
               </div>
             </div>
           </div>
@@ -504,7 +710,7 @@ export default function VisualizarFicha() {
               </div>
               <div>
                 <label className="text-emerald-200 text-sm font-medium">Tratamento anterior</label>
-                <p className="text-white">{formatarTexto(paciente.tratamento_anterior)}</p>
+                <p className="text-white">{formatarTextoDisplay(paciente.tratamento_anterior)}</p>
               </div>
               <div>
                 <label className="text-emerald-200 text-sm font-medium">Já foi ao dentista</label>
@@ -526,11 +732,11 @@ export default function VisualizarFicha() {
             <div className="space-y-4">
               <div>
                 <label className="text-emerald-200 text-sm font-medium">Alimentação</label>
-                <p className="text-white">{formatarTexto(paciente.alimentacao_notas)}</p>
+                <p className="text-white">{formatarTextoDisplay(paciente.alimentacao_notas)}</p>
               </div>
               <div>
                 <label className="text-emerald-200 text-sm font-medium">Informações adicionais</label>
-                <p className="text-white">{formatarTexto(paciente.informacoes_adicionais)}</p>
+                <p className="text-white">{formatarTextoDisplay(paciente.informacoes_adicionais)}</p>
               </div>
             </div>
           </div>
@@ -545,15 +751,15 @@ export default function VisualizarFicha() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="text-emerald-200 text-sm font-medium">Escova utilizada</label>
-                <p className="text-white">{formatarTexto(paciente.escova_usa)}</p>
+                <p className="text-white">{formatarTextoDisplay(paciente.escova_usa)}</p>
               </div>
               <div>
                 <label className="text-emerald-200 text-sm font-medium">Creme dental</label>
-                <p className="text-white">{formatarTexto(paciente.creme_dental)}</p>
+                <p className="text-white">{formatarTextoDisplay(paciente.creme_dental)}</p>
               </div>
               <div>
                 <label className="text-emerald-200 text-sm font-medium">Quem faz higiene</label>
-                <p className="text-white">{formatarTexto(paciente.higiene_bucal)}</p>
+                <p className="text-white">{formatarTextoDisplay(paciente.higiene_bucal)}</p>
               </div>
               <div>
                 <label className="text-emerald-200 text-sm font-medium">Vezes por dia</label>
@@ -633,7 +839,7 @@ export default function VisualizarFicha() {
             
             <div>
               <label className="text-emerald-200 text-sm font-medium">Nome do Responsável</label>
-              <p className="text-white">{formatarTexto(paciente.responsavel_nome)}</p>
+              <p className="text-white">{formatarTextoDisplay(paciente.responsavel_nome)}</p>
             </div>
             
             <div className="flex items-center space-x-2">
@@ -659,3 +865,4 @@ export default function VisualizarFicha() {
     </div>
   );
 }
+
