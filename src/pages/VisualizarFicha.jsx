@@ -267,7 +267,7 @@ export default function VisualizarFicha() {
         </div>
 
         {/* TODOS OS BLOCOS COMPLETOS ABAIXO */}
-        <div className="space-y-4" id="ficha-content">
+        <div className="space-y-2" id="ficha-content">
           {/* -------- DADOS PESSOAIS -------- */}
           <div className="glass-card rounded-2xl p-6 space-y-6">
             <div className="flex items-center space-x-3 mb-6">
@@ -318,7 +318,7 @@ export default function VisualizarFicha() {
           <div className="glass-card rounded-2xl p-6 space-y-6">
             <h2 className="text-xl font-semibold text-white mb-6">Dados dos Pais</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="space-y-4">
+              <div className="space-y-2">
                 <h3 className="text-lg font-medium text-emerald-300">Mãe</h3>
                 <div>
                   <label className="text-emerald-200 text-sm font-medium">Nome</label>
@@ -335,7 +335,7 @@ export default function VisualizarFicha() {
                   </div>
                 </div>
               </div>
-              <div className="space-y-4">
+              <div className="space-y-2">
                 <h3 className="text-lg font-medium text-emerald-300">Pai</h3>
                 <div>
                   <label className="text-emerald-200 text-sm font-medium">Nome</label>
@@ -361,7 +361,7 @@ export default function VisualizarFicha() {
               <FileText className="w-6 h-6 text-emerald-300" />
               <h2 className="text-xl font-semibold text-white">Motivo da Consulta</h2>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-2">
               <div>
                 <label className="text-emerald-200 text-sm font-medium">Motivo da consulta</label>
                 <p className="text-white">{formatarTexto(paciente.motivo_consulta)}</p>
@@ -597,7 +597,7 @@ export default function VisualizarFicha() {
               <Apple className="w-6 h-6 text-emerald-300" />
               <h2 className="text-xl font-semibold text-white">Alimentação e Outras Informações</h2>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-2">
               <div>
                 <label className="text-emerald-200 text-sm font-medium">Alimentação</label>
                 <p className="text-white">{formatarTexto(paciente.alimentacao_notas)}</p>
