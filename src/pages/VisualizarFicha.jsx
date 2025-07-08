@@ -68,14 +68,12 @@ export default function VisualizarFicha() {
 
       // Configurações otimizadas para o html2canvas
       const canvas = await html2canvas(input, {
-        scale: 1, // Reduzido para melhor performance
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#ffffff',
         logging: false,
         width: input.scrollWidth,
         height: input.scrollHeight,
-        windowWidth: 1000, // Largura reduzida para melhor consistência
         windowHeight: input.scrollHeight,
         onclone: (clonedDoc) => {
           // Aplicar estilos específicos no documento clonado
