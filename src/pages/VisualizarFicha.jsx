@@ -68,7 +68,7 @@ export default function VisualizarFicha() {
 
       // Configurações otimizadas para o html2canvas
       const canvas = await html2canvas(input, {
-        scale: 1.5, // Reduzido para melhor performance
+        scale: 1, // Reduzido para melhor performance
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#ffffff',
