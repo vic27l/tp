@@ -1,0 +1,238 @@
+/* PDF Export Styles - Layout idêntico ao anexo */
+.pdf-export {
+  background: linear-gradient(135deg, #1e5128 0%, #2d5a3d 50%, #1e5128 100%) !important;
+  color: #ffffff !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  font-family: 'Arial', sans-serif !important;
+  min-height: 100vh !important;
+  width: 210mm !important;
+  box-sizing: border-box !important;
+  overflow: visible !important;
+  position: relative !important;
+  transform: none !important;
+  page-break-inside: avoid !important;
+}
+
+/* Header com logo e foto */
+.pdf-export-header {
+  background: linear-gradient(135deg, #1e5128 0%, #2d5a3d 100%) !important;
+  padding: 20px !important;
+  position: relative !important;
+  height: 180px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+.pdf-export-logo {
+  color: #ffd700 !important;
+  font-size: 48px !important;
+  font-weight: bold !important;
+  font-family: 'Brush Script MT', cursive !important;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3) !important;
+}
+
+.pdf-export-title {
+  color: #ffffff !important;
+  font-size: 32px !important;
+  font-weight: bold !important;
+  margin-top: 10px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 2px !important;
+}
+
+.pdf-export-subtitle {
+  color: #ffffff !important;
+  font-size: 24px !important;
+  font-weight: normal !important;
+  margin-top: 5px !important;
+}
+
+.pdf-export-doctor {
+  width: 150px !important;
+  height: 150px !important;
+  border-radius: 50% !important;
+  border: 4px solid #ffffff !important;
+  object-fit: cover !important;
+}
+
+/* Formulário */
+.pdf-export-form {
+  background: #ffffff !important;
+  padding: 30px !important;
+  margin: 0 !important;
+  min-height: calc(100vh - 180px) !important;
+}
+
+.pdf-export .glass-card {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin-bottom: 20px !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  page-break-inside: avoid !important;
+  break-inside: avoid !important;
+}
+
+/* Campos do formulário */
+.pdf-export-field {
+  margin-bottom: 15px !important;
+  display: flex !important;
+  align-items: center !important;
+  border-bottom: 1px solid #cccccc !important;
+  padding-bottom: 8px !important;
+}
+
+.pdf-export-field label {
+  color: #1e5128 !important;
+  font-weight: bold !important;
+  font-size: 12px !important;
+  text-transform: uppercase !important;
+  min-width: 150px !important;
+  margin-right: 10px !important;
+  margin-bottom: 0 !important;
+}
+
+.pdf-export-field-value {
+  flex: 1 !important;
+  border-bottom: 1px dotted #999999 !important;
+  min-height: 20px !important;
+  padding: 2px 5px !important;
+  color: #333333 !important;
+  font-size: 12px !important;
+}
+
+/* Layout de duas colunas */
+.pdf-export-row {
+  display: flex !important;
+  gap: 20px !important;
+  margin-bottom: 15px !important;
+}
+
+.pdf-export-col {
+  flex: 1 !important;
+}
+
+/* Campos SIM/NÃO */
+.pdf-export-checkbox {
+  display: inline-flex !important;
+  align-items: center !important;
+  margin-right: 15px !important;
+}
+
+.pdf-export-checkbox-box {
+  width: 12px !important;
+  height: 12px !important;
+  border: 1px solid #333333 !important;
+  margin-right: 5px !important;
+  display: inline-block !important;
+  text-align: center !important;
+  line-height: 10px !important;
+  font-size: 8px !important;
+}
+
+.pdf-export-checkbox-label {
+  font-size: 10px !important;
+  color: #333333 !important;
+  font-weight: normal !important;
+}
+
+/* Seções */
+.pdf-export h1, .pdf-export h2, .pdf-export h3 {
+  color: #1e5128 !important;
+  margin: 20px 0 15px 0 !important;
+  font-weight: bold !important;
+  page-break-after: avoid !important;
+  text-transform: uppercase !important;
+  border-bottom: 2px solid #1e5128 !important;
+  padding-bottom: 5px !important;
+}
+
+.pdf-export h2 {
+  font-size: 14px !important;
+}
+
+.pdf-export h3 {
+  font-size: 12px !important;
+}
+
+/* Ocultar elementos desnecessários no PDF */
+.pdf-export .glass-button,
+.pdf-export button,
+.pdf-export .lucide,
+.pdf-export svg {
+  display: none !important;
+}
+
+/* Texto padrão */
+.pdf-export p {
+  color: #333333 !important;
+  margin-bottom: 5px !important;
+  line-height: 1.4 !important;
+  font-size: 12px !important;
+}
+
+/* Grid responsivo para PDF */
+.pdf-export .grid {
+  display: block !important;
+}
+
+.pdf-export .grid > div {
+  margin-bottom: 10px !important;
+}
+
+/* Espaçamentos */
+.pdf-export .space-y-4 > * + *,
+.pdf-export .space-y-6 > * + *,
+.pdf-export .space-y-8 > * + * {
+  margin-top: 0 !important;
+}
+
+/* Cores específicas */
+.pdf-export .text-white,
+.pdf-export .text-emerald-100,
+.pdf-export .text-emerald-200,
+.pdf-export .text-emerald-300 {
+  color: #333333 !important;
+}
+
+/* Quebras de página */
+.pdf-export-page-break {
+  page-break-before: always !important;
+  break-before: page !important;
+}
+
+/* Rodapé */
+.pdf-export-footer {
+  position: fixed !important;
+  bottom: 20px !important;
+  left: 30px !important;
+  right: 30px !important;
+  text-align: center !important;
+  font-size: 10px !important;
+  color: #666666 !important;
+  border-top: 1px solid #cccccc !important;
+  padding-top: 10px !important;
+}
+
+/* Assinatura */
+.pdf-export-signature {
+  margin-top: 40px !important;
+  text-align: center !important;
+}
+
+.pdf-export-signature-line {
+  border-bottom: 1px solid #333333 !important;
+  width: 300px !important;
+  margin: 20px auto 10px auto !important;
+}
+
+.pdf-export-signature-text {
+  font-size: 10px !important;
+  color: #666666 !important;
+}
+
