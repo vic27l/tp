@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Paciente } from "@/entities/Paciente";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Plus, Search, FileText, Calendar, User, Phone } from "lucide-react";
+import { Plus, Search, FileText, Calendar, User, Phone, Edit3 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -195,6 +195,13 @@ export default function Dashboard() {
                       className="glass-button px-4 py-2 rounded-lg text-white font-medium hover:bg-emerald-500/30 transition-all text-center"
                     >
                       Ver Ficha
+                    </Link>
+                    <Link
+                      to={`${createPageUrl("EditarFicha")}?id=${paciente.id}`}
+                      className="glass-button px-4 py-2 rounded-lg text-white font-medium hover:bg-white/20 transition-all text-center flex items-center justify-center space-x-1"
+                    >
+                      <Edit3 className="w-4 h-4" />
+                      <span>Editar</span>
                     </Link>
                     {paciente.motivo_consulta && (
                       <p className="text-xs text-white/70 max-w-xs">

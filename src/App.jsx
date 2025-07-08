@@ -4,6 +4,7 @@ import Layout from './components/Layout'
 import Dashboard from './pages/Dashboard'
 import NovaFicha from './pages/NovaFicha'
 import VisualizarFicha from './pages/VisualizarFicha'
+import EditarFicha from './pages/EditarFicha'
 import Consultas from './pages/Consultas'
 
 function App() {
@@ -25,6 +26,11 @@ function App() {
           <Route path="/visualizar-ficha" element={
             <Layout currentPageName="VisualizarFicha">
               <VisualizarFicha />
+            </Layout>
+          } />
+          <Route path="/editar-ficha" element={
+            <Layout currentPageName="EditarFicha">
+              <EditarFicha />
             </Layout>
           } />
           <Route path="/consultas" element={

@@ -3,6 +3,7 @@ export const createPageUrl = (pageName) => {
     'Dashboard': '/dashboard',
     'NovaFicha': '/nova-ficha',
     'VisualizarFicha': '/visualizar-ficha',
+    'EditarFicha': '/editar-ficha',
     'Consultas': '/consultas'
   };
   

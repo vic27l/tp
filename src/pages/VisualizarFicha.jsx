@@ -194,6 +194,13 @@ export default function VisualizarFicha() {
             )}
             <span>{isExporting ? "Exportando..." : "Exportar PDF"}</span>
           </button>
+          <button
+            onClick={() => navigate(`${createPageUrl("EditarFicha")}?id=${pacienteId}`)}
+            className="glass-button px-4 py-2 rounded-lg text-white font-medium flex items-center space-x-2 hover:bg-emerald-500/30 transition-all"
+          >
+            <Edit3 className="w-5 h-5" />
+            <span>Editar</span>
+          </button>
         </div>
 
         <div className="space-y-8" id="ficha-content">
