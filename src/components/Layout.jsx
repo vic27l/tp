@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Users, Calendar, Settings } from "lucide-react";
+import { FileText, Users, Calendar, Settings } from "lucide-react";
 
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
