@@ -61,44 +61,51 @@ export default function VisualizarFicha() {
     // Add PDF export class
     input.classList.add('pdf-export');
   
-    html2canvas(input, {
-      scale: 2, // Increase scale for better quality
-      useCORS: true,
-      logging: false, // Disable logging for cleaner console
-      allowTaint: true, // Allow tainting the canvas from cross-origin images (if any)
-      backgroundColor: '#1a202c',
-      width: input.scrollWidth,
-      height: input.scrollHeight,
-    }).then(canvas => {
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const imgProps = pdf.getImageProperties(imgData);
-      const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
-      
-      let heightLeft = imgHeight;
-      let position = 0;
+    // Wait for styles to apply
+    setTimeout(() => {
+      html2canvas(input, {
+        scale: 1.5, // Balanced scale for quality and performance
+        useCORS: true,
+        logging: false, // Disable logging for cleaner console
+        allowTaint: true, // Allow tainting the canvas from cross-origin images (if any)
+        backgroundColor: '#ffffff', // White background
+        width: input.scrollWidth,
+        height: input.scrollHeight,
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: input.scrollWidth,
+        windowHeight: input.scrollHeight
+      }).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const imgProps = pdf.getImageProperties(imgData);
+        const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        
+        let heightLeft = imgHeight;
+        let position = 0;
   
-      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
-      heightLeft -= pdfHeight;
-  
-      while (heightLeft > 0) {
-        position = heightLeft - pdfHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, -position, pdfWidth, imgHeight);
+        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
         heightLeft -= pdfHeight;
-      }
-      
-      pdf.save(`ficha_${paciente.nome_crianca.replace(/\s+/g, '_')}.pdf`);
-      
-    }).catch(err => {
-      console.error("Error exporting PDF:", err);
-    }).finally(() => {
-      // Remove PDF export class
-      input.classList.remove('pdf-export');
-      setIsExporting(false);
-    });
+  
+        while (heightLeft > 0) {
+          position = heightLeft - pdfHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, 'PNG', 0, -position, pdfWidth, imgHeight);
+          heightLeft -= pdfHeight;
+        }
+        
+        pdf.save(`ficha_${paciente.nome_crianca.replace(/\s+/g, '_')}.pdf`);
+        
+      }).catch(err => {
+        console.error("Error exporting PDF:", err);
+      }).finally(() => {
+        // Remove PDF export class
+        input.classList.remove('pdf-export');
+        setIsExporting(false);
+      });
+    }, 100);
   };
 
   if (isLoading) {
@@ -387,6 +394,10 @@ export default function VisualizarFicha() {
             <div>
               <label className="text-emerald-200 text-sm font-medium">Tratamentos atuais</label>
               <p className="text-white">{formatarTexto(paciente.tratamentos_atuais)}</p>
+            </div>
+          </div>
+
+          {/* Acompanhamentos e Hábitos */}
           <div className="glass-card rounded-2xl p-6 space-y-6">
             <div className="flex items-center space-x-3 mb-6">
               <Activity className="w-6 h-6 text-emerald-300" />
@@ -478,7 +489,7 @@ export default function VisualizarFicha() {
               </div>
             </div>
           </div>
-            </div>
+
           {/* Histórico Odontológico */}
           <div className="glass-card rounded-2xl p-6 space-y-6">
             <div className="flex items-center space-x-3 mb-6">
@@ -504,7 +515,7 @@ export default function VisualizarFicha() {
               </div>
             </div>
           </div>
-          </div>
+
           {/* Alimentação e Outras Informações */}
           <div className="glass-card rounded-2xl p-6 space-y-6">
             <div className="flex items-center space-x-3 mb-6">

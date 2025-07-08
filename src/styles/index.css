@@ -38,27 +38,34 @@
 
 /* PDF Export Styles */
 .pdf-export {
-  background: #1a202c !important;
-  color: white !important;
+  background: #ffffff !important;
+  color: #1a202c !important;
   padding: 2rem !important;
   font-family: system-ui, -apple-system, sans-serif !important;
+  min-height: auto !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 .pdf-export .glass-card {
-  background: #2d3748 !important;
-  border: 1px solid #4a5568 !important;
+  background: #f8f9fa !important;
+  border: 1px solid #e9ecef !important;
   border-radius: 1rem !important;
   padding: 1.5rem !important;
   margin-bottom: 1.5rem !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
 }
 
 .pdf-export h1, .pdf-export h2, .pdf-export h3 {
-  color: #68d391 !important;
+  color: #059669 !important;
   margin-bottom: 1rem !important;
+  font-weight: 600 !important;
 }
 
 .pdf-export label {
-  color: #9ae6b4 !important;
+  color: #047857 !important;
   font-weight: 600 !important;
   font-size: 0.875rem !important;
   display: block !important;
@@ -66,8 +73,53 @@
 }
 
 .pdf-export p {
-  color: white !important;
+  color: #1a202c !important;
   margin-bottom: 0.5rem !important;
+  line-height: 1.5 !important;
+}
+
+.pdf-export .bg-white\/10,
+.pdf-export .bg-white\/20,
+.pdf-export .bg-white\/30 {
+  background: #f1f5f9 !important;
+}
+
+.pdf-export .text-white {
+  color: #1a202c !important;
+}
+
+.pdf-export .text-emerald-100,
+.pdf-export .text-emerald-200,
+.pdf-export .text-emerald-300 {
+  color: #047857 !important;
+}
+
+.pdf-export .text-white\/60,
+.pdf-export .text-white\/70,
+.pdf-export .text-white\/80,
+.pdf-export .text-white\/90 {
+  color: #64748b !important;
+}
+
+.pdf-export .border-white\/30 {
+  border-color: #e2e8f0 !important;
+}
+
+.pdf-export .bg-red-500 {
+  background: #dc2626 !important;
+  color: white !important;
+}
+
+.pdf-export .bg-emerald-500 {
+  background: #059669 !important;
+  color: white !important;
+}
+
+.pdf-export .w-6,
+.pdf-export .h-6,
+.pdf-export .w-4,
+.pdf-export .h-4 {
+  color: #059669 !important;
 }
 
 .floating-particles {
