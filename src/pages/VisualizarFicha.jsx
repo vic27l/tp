@@ -14,7 +14,8 @@ import { ptBR } from "date-fns/locale";
 
 // #region Odontograma Component
 // This new component replaces the old MapaDental
-const odontogramImageUrl = "https://i.ibb.co/bX2s2yS/odontogram.png";
+// UPDATED: Replaced broken image link with a stable one.
+const odontogramImageUrl = "https://i.imgur.com/39E3s2b.png";
 
 // Configuration for tooth positions (top, left, width, height in %)
 const toothLayout = {
