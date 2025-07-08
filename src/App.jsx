@@ -8,7 +8,7 @@ import Consultas from './pages/Consultas'
 
 function App() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-600 via-teal-700 to-cyan-800">
+    <div className="min-h-screen">
       <Router>
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />

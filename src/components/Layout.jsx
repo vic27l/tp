@@ -1,13 +1,16 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { FileText, Users, Calendar, Settings } from "lucide-react";
+import { Users, Calendar, Settings } from "lucide-react";
 
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden bg-cover bg-center bg-no-repeat" style={{backgroundImage: 'url(/bg.png)'}}>
+      {/* Background overlay for better readability */}
+      <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/80 via-teal-700/80 to-cyan-800/80"></div>
+      
       {/* Floating Particles */}
       <div className="floating-particles">
         <div className="particle"></div>
@@ -22,8 +25,12 @@ export default function Layout({ children, currentPageName }) {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full flex items-center justify-center glass-card">
-                <FileText className="w-6 h-6 text-white" />
+              <div className="w-12 h-12 rounded-full flex items-center justify-center overflow-hidden bg-white/10 backdrop-blur-sm border border-white/20">
+                <img 
+                  src="/logo.png" 
+                  alt="Tio Paulo Logo" 
+                  className="w-10 h-10 object-contain"
+                />
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-white">Tio Paulo</h1>
@@ -65,7 +72,7 @@ export default function Layout({ children, currentPageName }) {
       </header>
       
       {/* Main Content */}
-      <main className="relative z-10">
+      <main className="relative z-20">
         {children}
       </main>
     </div>
