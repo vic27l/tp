@@ -76,15 +76,6 @@ export default function VisualizarFicha() {
         height: input.scrollHeight,
         windowHeight: input.scrollHeight,
         onclone: (clonedDoc) => {
-          // Aplicar estilos específicos no documento clonado
-          const clonedElement = clonedDoc.getElementById('ficha-content');
-          if (clonedElement) {
-            clonedElement.style.width = '1000px';
-            clonedElement.style.maxWidth = 'none';
-            clonedElement.style.padding = '30px';
-            clonedElement.style.fontSize = '13px';
-            clonedElement.style.background = '#ffffff';
-            clonedElement.style.color = '#000000';
             
             // Ajustar cards para melhor formatação
             const cards = clonedElement.querySelectorAll('.glass-card');
